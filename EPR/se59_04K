@@ -1,0 +1,75 @@
+#
+# specify the number and path to curtain spline files
+#
+CurtainStepSize: 0.02
+CurtainSplineFile:     ../Data/Y26X8/curtainMain.data
+CurtainVisibleFile:    ../Data/curtainMain.visible
+CurtainTextureFile:    ../Data/curtainMain.texture
+CurtainBrightnessFile: ../Data/curtainMain.brightness
+CurtainUVFile:         ../Data/curtainMain.uv
+#
+CurtainStepSize: 0.08
+CurtainSplineFile:     ../Data/Y26X8/secondaryCurtain.data
+CurtainVisibleFile:    ../Data/secondaryCurtain.visible
+CurtainTextureFile:    ../Data/secondaryCurtain.texture
+CurtainBrightnessFile: ../Data/secondaryCurtain.brightness
+CurtainUVFile:         ../Data/secondaryCurtain.uv
+#
+CurtainStepSize: 0.08
+CurtainSplineFile:     ../Data/Y26X8/secondaryCurtain-1.data
+CurtainVisibleFile:    ../Data/secondaryCurtain-1.visible
+CurtainTextureFile:    ../Data/secondaryCurtain-1.texture
+CurtainBrightnessFile: ../Data/secondaryCurtain.brightness
+CurtainUVFile:         ../Data/secondaryCurtain-1.uv
+#
+CurtainStepSize: 0.06
+CurtainSplineFile:     ../Data/Y26X8/tertiaryCurtain.data
+CurtainVisibleFile:    ../Data/tertiaryCurtain.visible
+CurtainTextureFile:    ../Data/tertiaryCurtain.texture
+CurtainBrightnessFile: ../Data/tertiaryCurtain.brightness
+CurtainUVFile:         ../Data/tertiaryCurtain.uv
+#
+CurtainStepSize: 0.06
+CurtainSplineFile:     ../Data/Y26X8/tertiaryCurtain-1.data
+CurtainVisibleFile:    ../Data/tertiaryCurtain.visible
+CurtainTextureFile:    ../Data/tertiaryCurtain-1.texture
+CurtainBrightnessFile: ../Data/tertiaryCurtain.brightness
+CurtainUVFile:         ../Data/tertiaryCurtain-1.uv
+#
+CurtainStepSize: 0.025
+CurtainSplineFile:     ../Data/Y26X8/clouds.data
+CurtainVisibleFile:    ../Data/clouds.visible
+CurtainTextureFile:    ../Data/clouds.texture
+CurtainBrightnessFile: ../Data/clouds.brightness
+CurtainUVFile:         ../Data/clouds.uv
+#
+InclinationFile: ../Data/Binc_200km_03oct31_to45.txt
+#
+# specifies range of curtain splines to do
+# renderer will interpolate if necessary
+#
+# set for new sunearth camera test
+CurtainFrameBegin: 283.03333333
+CurtainFrameInc: 0.03333333
+#
+CurtainWidth: 60.0
+CurtainTexturePath: /Genetti/Hayden/06-02-05/%03d/turb%04d.pbm
+CurtainResLowest: 4
+CurtainResHighest: 512
+#
+# size of the volume dataset (in km)
+#
+VolumeXmin: -2400.0
+VolumeXmax:  3400.0
+VolumeYmin:  5200.0
+VolumeYmax:  6800.0
+VolumeZmin: -4100.0
+VolumeZmax:  2200.0
+#
+# specifies size of the 3D volume grid
+#
+SubGridSize: 16 16 16
+
+# 4096 x 1024 x 4096 (1.4km, 1.6km, 1.5km)
+SuperGridSize: 256 64 256
+

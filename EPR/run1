@@ -1,0 +1,19 @@
+
+#./epr.gre se59_02K cam.rect -range 6090 6090 1 a -res 1280 1024
+#./epr.red se59_01K cam.rect -range 6090 6090 1 a -res 1280 1024
+#./epr.red se59_01K cam.rect -range 7049 7049 1 a -res 1280 1024
+#./epr.red se59_01K cam.rect -range 7050 7050 1 a -res 1280 1024
+
+#./epr.gre se59_04K cam.rect -range 6090 6090 1 b -res 1600 1200
+#./epr.red se59_02K cam.rect -range 6090 6090 1 b -res 1600 1200
+#./epr.red se59_02K cam.rect -range 7049 7049 1 b -res 1600 1200
+#./epr.red se59_02K cam.rect -range 7050 7050 1 b -res 1600 1200
+
+./epr.gre se59_08K cam.rect -range 6090 6090 1 c -res 1600 1200
+./epr.red se59_04K cam.rect -range 6090 6090 1 c -res 1600 1200
+./epr.red se59_04K cam.rect -range 7049 7049 1 c -res 1600 1200
+./epr.red se59_04K cam.rect -range 7050 7050 1 c -res 1600 1200
+
+#./epr.gre se59_16K cam.rect -range 6090 6090 1 c -res 1600 1200
+#./epr.red se59_08K cam.rect -range 6090 6090 1 c -res 1600 1200
+

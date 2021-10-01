@@ -1,0 +1,39 @@
+
+#render range 1
+#./epr.red se59_08K cam.se59 -range 5801 5849 1 below -res 4096 4096 > redout.5801
+#./epr.red se59_08K cam.se59 -range 5851 5899 1 below -res 4096 4096 > redout.5851
+#./epr.red se59_08K cam.se59 -range 5901 5949 1 below -res 4096 4096 > redout.5901
+#./epr.red se59_08K cam.se59 -range 5951 5999 1 below -res 4096 4096 > redout.5951
+
+#./epr.red se59_08K cam.se59 -range 6001 6049 1 below -res 4096 4096 > redout.6001
+#./epr.red se59_08K cam.se59 -range 6051 6099 1 below -res 4096 4096 > redout.6051
+#./epr.red se59_08K cam.se59 -range 6101 6149 1 below -res 4096 4096 > redout.6101
+#./epr.red se59_08K cam.se59 -range 6151 6199 1 below -res 4096 4096 > redout.6151
+#./epr.red se59_08K cam.se59 -range 6201 6249 1 below -res 4096 4096 > redout.6201
+#./epr.red se59_08K cam.se59 -range 6251 6299 1 below -res 4096 4096 > redout.6251
+#./epr.red se59_08K cam.se59 -range 6301 6349 1 below -res 4096 4096 > redout.6301
+#./epr.red se59_08K cam.se59 -range 6351 6399 1 below -res 4096 4096 > redout.6351
+#./epr.red se59_08K cam.se59 -range 6401 6449 1 below -res 4096 4096 > redout.6401
+#./epr.red se59_08K cam.se59 -range 6451 6499 1 below -res 4096 4096 > redout.6451
+#./epr.red se59_08K cam.se59 -range 6501 6549 1 below -res 4096 4096 > redout.6501
+#./epr.red se59_08K cam.se59 -range 6551 6599 1 below -res 4096 4096 > redout.6551
+#./epr.red se59_08K cam.se59 -range 6601 6649 1 below -res 4096 4096 > redout.6601
+#./epr.red se59_08K cam.se59 -range 6651 6699 1 below -res 4096 4096 > redout.6651
+#./epr.red se59_08K cam.se59 -range 6701 6749 1 below -res 4096 4096 > redout.6701
+
+#./epr.red se59_08K cam.se59 -range 6723 6749 1 below -res 4096 4096 > redout.6723
+#./epr.red se59_08K cam.se59 -range 6751 6799 1 below -res 4096 4096 > redout.6751
+#./epr.red se59_08K cam.se59 -range 6801 6849 1 below -res 4096 4096 > redout.6801
+#./epr.red se59_08K cam.se59 -range 6851 6899 1 below -res 4096 4096 > redout.6851
+#./epr.red se59_08K cam.se59 -range 6901 6949 1 below -res 4096 4096 > redout.6901
+#./epr.red se59_08K cam.se59 -range 6951 6999 1 below -res 4096 4096 > redout.6951
+
+./epr.red se59_08K cam.se59 -range 7001 7049 1 below -res 4096 4096 > redout.7001
+./epr.red se59_08K cam.se59 -range 7051 7099 1 below -res 4096 4096 > redout.7051
+./epr.red se59_08K cam.se59 -range 7101 7149 1 below -res 4096 4096 > redout.7101
+./epr.red se59_08K cam.se59 -range 7151 7199 1 below -res 4096 4096 > redout.7151
+./epr.red se59_08K cam.se59 -range 7201 7249 1 below -res 4096 4096 > redout.7201
+./epr.red se59_08K cam.se59 -range 7251 7299 1 below -res 4096 4096 > redout.7251
+./epr.red se59_08K cam.se59 -range 7301 7349 1 below -res 4096 4096 > redout.7301
+./epr.red se59_08K cam.se59 -range 7351 7399 1 below -res 4096 4096 > redout.7351
+

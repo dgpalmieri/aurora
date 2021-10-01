@@ -1,0 +1,53 @@
+
+# SUN Shared Memory Multi-Threaded (OpenMP) version
+#  CC = /paci/vis/johnson/guide37/bin/guidec -fast -DSUN -DOMP
+#  AR = /usr/ccs/bin/ar -r
+
+# IBM SP2 Shared Memory Multi-Threaded (OpenMP) version
+# IBM compiler and associated flags
+#  CFLAGS = -O3 -qstrict -qarch=auto -qtune=auto -qsmp=omp
+#  CC = xlc_r -DSP2 -DOMP
+# Kuck & Associates compiler
+#  CC = guidec -DSP2 -DOMP
+#  AR = ar
+
+# IBM SP2 uniprocessor version
+#  CFLAGS = -O3 -qstrict -qarch=auto -qtune=auto -qnolm
+#  CC = cc -DSP2
+#  AR = ar -r
+
+# SGI 64 bit uniprocessor version
+#  CC = cc -g -64 -DSGI64
+# CC = cc -64 -O2 -DSGI64
+# AR = ar -r
+
+# SGI 32 bit uniprocessor version
+#  CC = cc -g -32 -DSGI32
+#  CC = cc -O2 -32 -DSGI32
+#  AR = ar -r
+
+# Apple G4 uniprocessor version
+# CC = gcc -g -DSGI32
+CC = cc -O2 -DSGI32
+AR = ar -r
+ALL = noise.o raster.o rays.o timing.o view.o
+
+libepr.a: $(ALL)
+	$(AR) libepr.a $(ALL)
+	ranlib libepr.a
+
+noise.o: noise.h noise.c
+
+raster.o: raster.h atomics.h raster.c
+
+rays.o: rays.h rays.c
+
+view.o: rays.h view.h view.c
+
+timing.o: timing.h timing.c
+
+clean:
+	rm -f libepr.a *.o
+
+tar:
+	tar -cvf libepr.tar Makefile *.c *.h

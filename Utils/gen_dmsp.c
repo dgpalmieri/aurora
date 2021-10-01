@@ -1,0 +1,626 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "rays.h"
+
+#define DEG2RAD (M_PI/180.0)
+#define RAD2DEG (180.0/M_PI)
+
+#define LOWER_LAT_RANGE 45.0
+#define LAT_RANGE 45.0
+
+#define CurtainWidth 60.0
+
+/* info to read the texture map */
+#define TEXT_URES 512
+#define TEXT_VRES 4096
+static unsigned char texture[TEXT_URES*TEXT_VRES];
+static char *texture_name = "/Genetti/Hayden/05-10-31/512/snap0150.pbm";
+
+/* info of file to write out */
+#define OUT_XRES 30000
+#define OUT_YRES 15000
+static unsigned char raster[OUT_XRES*OUT_YRES];
+static char *out_name = "dmsp_00480.pgm";
+
+/* spline files to read in */
+#define NUM_SPLINES 6
+#define NUM_POINTS 103
+static char *splines[NUM_SPLINES] =
+  { "22100_1.data", "22100_2.data",   "22100_2-1.data",
+    "22100_3.data", "22100_3-1.data", "22100_4.data" };
+static char *uvfiles[NUM_SPLINES] =
+  { "../Data/curtainMain.uv",
+    "../Data/secondaryCurtain.uv",
+    "../Data/n5p20/2-1.uv",
+    "../Data/tertiaryCurtain.uv",
+    "../Data/n5p20/3-1.uv",
+    "../Data/clouds.uv"};
+static char *brightfiles[NUM_SPLINES] = 
+  { "../Data/curtainMain.brightness",
+    "../Data/secondaryCurtain.brightness",
+    "../Data/secondaryCurtain.brightness",
+    "../Data/tertiaryCurtain.brightness",
+    "../Data/tertiaryCurtain.brightness",
+    "../Data/clouds.brightness"};
+#if 0
+static double seg_step_size[NUM_SPLINES] = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+#endif
+static double seg_step_size[NUM_SPLINES] = { 0.02, 0.08, 0.08, 0.06, 0.06, 0.025 };
+static double spX[NUM_POINTS];
+static double spY[NUM_POINTS];
+static double spZ[NUM_POINTS];
+static float  uv[NUM_POINTS];
+static float brightness[NUM_POINTS];
+
+typedef struct { Point v[4]; double tu[4]; double tv[4]; Vector n; double d; } Polygon;
+
+typedef struct {
+  double x;  /* x value (in voxel coordinates) */
+  double y;  /* y value (in voxel coordinates) */
+  double z;  /* z value (in voxel coordinates) */
+  double d;  /* weight [0.0, 1.0] brightness of curtain*visibility */
+  double e;  /* elevation (in world coordinates) */
+  double u;  /* u value for texture map (width of curtain) */
+  double v;  /* v value for texture map (along length of curtain) */
+} Vertex;
+
+
+void scan_convert(
+Vertex P1,
+Vertex P2,
+Vertex P3
+)
+{
+  Vertex tmp;
+  Vertex A, B, C, D;
+  double x0, x1, xs0, xs1; /* used to interpolate x along edges */
+  double u0, u1, us0, us1; /* used to interpolate u along edges */
+  double v0, v1, vs0, vs1; /* used to interpolate v along edges */
+  double d0, d1, ds0, ds1; /* used to interpolate brightness along edges */
+  double e0, e1, es0, es1; /* used to interpolate elevation along edges */
+  double ru, rus0; /* used to interpolate u along the scan line */
+  double rv, rvs0; /* used to interpolate v along the scan line */
+  double rd, rds0; /* used to interpolate dropoff along the scan line */
+  double re, res0; /* used to interpolate elevation along the scan line */
+  double rx; /* used to interpolate x along scan line */
+  double z;
+  double frac;
+  double val;
+  int u, v;
+  double fl_u, fl_v;
+  double u_frac, v_frac;
+  short l00, l10, l01, l11;
+  short u00, u10, u01, u11;
+  short i00, i10, i01, i11;
+  short lx0, lx1, lxx;
+  short ux0, ux1, uxx;
+  short ix0, ix1, ixx;
+  Vector pt;
+  double tmp1, tmp2;
+  int px, py;
+  short new_val;
+
+  /* find the middle z value with simple bubble sort */
+  if (P2.z < P1.z) { tmp=P1; P1=P2; P2=tmp; }
+  if (P3.z < P2.z) { tmp=P2; P2=P3; P3=tmp; }
+  if (P2.z < P1.z) { tmp=P1; P1=P2; P2=tmp; }
+
+  /* find point B on line P1P2 with z=P2.z */
+  tmp1 = (P2.z-P1.z) / (P3.z-P1.z);
+  B.x = P1.x + (P3.x-P1.x)*tmp1;
+  B.d = P1.d + (P3.d-P1.d)*tmp1;
+  B.e = P1.e + (P3.e-P1.e)*tmp1;
+  B.u = P1.u + (P3.u-P1.u)*tmp1;
+  B.v = P1.v + (P3.v-P1.v)*tmp1;
+  B.z = P2.z;
+  A = P2; C = P3; D = P1;
+
+  /* A.z == B.z */
+  tmp1 = 1.0 / (C.z - A.z);
+  if (A.x < B.x) {
+    x0 = A.x; xs0 = (C.x-A.x) * tmp1;
+    x1 = B.x; xs1 = (C.x-B.x) * tmp1;
+    d0 = A.d; ds0 = (C.d-A.d) * tmp1;
+    d1 = B.d; ds1 = (C.d-B.d) * tmp1;
+    e0 = A.e; es0 = (C.e-A.e) * tmp1;
+    e1 = B.e; es1 = (C.e-B.e) * tmp1;
+    u0 = A.u; us0 = (C.u-A.u) * tmp1;
+    u1 = B.u; us1 = (C.u-B.u) * tmp1;
+    v0 = A.v; vs0 = (C.v-A.v) * tmp1;
+    v1 = B.v; vs1 = (C.v-B.v) * tmp1;
+  } else {
+    x0 = B.x; xs0 = (C.x-B.x) * tmp1;
+    x1 = A.x; xs1 = (C.x-A.x) * tmp1;
+    d0 = B.d; ds0 = (C.d-B.d) * tmp1;
+    d1 = A.d; ds1 = (C.d-A.d) * tmp1;
+    e0 = B.e; es0 = (C.e-B.e) * tmp1;
+    e1 = A.e; es1 = (C.e-A.e) * tmp1;
+    u0 = B.u; us0 = (C.u-B.u) * tmp1;
+    u1 = A.u; us1 = (C.u-A.u) * tmp1;
+    v0 = B.v; vs0 = (C.v-B.v) * tmp1;
+    v1 = A.v; vs1 = (C.v-A.v) * tmp1;
+  }
+
+  z = ceil(A.z);
+  frac = z - A.z;
+  x0 += frac*xs0; x1 += frac*xs1;
+  d0 += frac*ds0; d1 += frac*ds1;
+  e0 += frac*es0; e1 += frac*es1;
+  u0 += frac*us0; u1 += frac*us1;
+  v0 += frac*vs0; v1 += frac*vs1;
+  while ( z <= C.z ) {
+    tmp2 = 1.0 / (x1 - x0);
+    rx = ceil(x0);
+    rus0 = (u1 - u0) * tmp2; ru = u0 + (rx - x0) * rus0;
+    rvs0 = (v1 - v0) * tmp2; rv = v0 + (rx - x0) * rvs0;
+    rds0 = (d1 - d0) * tmp2; rd = d0 + (rx - x0) * rds0;
+    res0 = (e1 - e0) * tmp2; re = e0 + (rx - x0) * res0;
+
+    while (rx < x1) {
+
+      if (rd > 0.0) {
+
+        /* bi-linear lookup into low-res texture map */
+        fl_u = ru * (TEXT_URES-1);
+        u = (int) fl_u; u_frac = fl_u - u;
+        fl_v = (rv - floor(rv)) * (TEXT_VRES-1);
+        v = (int) fl_v; v_frac = fl_v - v;
+        l00 = texture[v   + u*TEXT_VRES];
+        l01 = texture[v+1 + u*TEXT_VRES];
+        l10 = texture[v   + (u+1)*TEXT_VRES];
+        l11 = texture[v+1 + (u+1)*TEXT_VRES];
+        lx0 = l00 + (short)((l10 - l00)*u_frac);
+        lx1 = l01 + (short)((l11 - l01)*u_frac);
+        lxx = lx0 + (short)((lx1 - lx0)*v_frac);
+
+        px = (int) rx;
+        py = (int) z;
+        if (raster[px+py*OUT_XRES]==0) {
+          raster[px + py*OUT_XRES] = (unsigned char) (rd * lxx);
+        } else {
+          new_val = (short) raster[px + py*OUT_XRES] + (short) (rd * lxx);
+          new_val /= 2;
+          if (new_val > 255) raster[px + py*OUT_XRES] = 255;
+          else               raster[px + py*OUT_XRES] = (unsigned char) new_val;
+        }
+
+//        raster[px + py*OUT_XRES] = (unsigned char) (rd * lxx);
+//raster[px + py*OUT_XRES] = (unsigned char) (ru * 255);
+//if (py == 316){
+//printf(" x=%.1lf z=%.1lf u=%lf v=%lf texture=%d\n", rx, z, ru, rv, lxx);
+//}
+//        raster[ri+rj*OUT_XRES] = 255;
+//      set_vol((short) (lxx*rd), (uLong) rx, (uLong) z);
+
+      }
+
+      ru += rus0; rv += rvs0;
+      rd += rds0; re += res0;
+      rx += 1.0;
+    }
+    x0 += xs0; x1 += xs1;
+    d0 += ds0; d1 += ds1;
+    e0 += es0; e1 += es1;
+    u0 += us0; u1 += us1;
+    v0 += vs0; v1 += vs1;
+    z+=1.0;
+  }
+
+  /* now do bottom of triangle */
+  /* A.z == B.z */
+  tmp1 = 1.0 / (D.z - A.z);
+  if (A.x < B.x) {
+    x0 = A.x; xs0 = (D.x-A.x) * tmp1;
+    x1 = B.x; xs1 = (D.x-B.x) * tmp1;
+    d0 = A.d; ds0 = (D.d-A.d) * tmp1;
+    d1 = B.d; ds1 = (D.d-B.d) * tmp1;
+    e0 = A.e; es0 = (D.e-A.e) * tmp1;
+    e1 = B.e; es1 = (D.e-B.e) * tmp1;
+    u0 = A.u; us0 = (D.u-A.u) * tmp1;
+    u1 = B.u; us1 = (D.u-B.u) * tmp1;
+    v0 = A.v; vs0 = (D.v-A.v) * tmp1;
+    v1 = B.v; vs1 = (D.v-B.v) * tmp1;
+  } else {
+    x0 = B.x; xs0 = (D.x-B.x) * tmp1;
+    x1 = A.x; xs1 = (D.x-A.x) * tmp1;
+    d0 = B.d; ds0 = (D.d-B.d) * tmp1;
+    d1 = A.d; ds1 = (D.d-A.d) * tmp1;
+    e0 = B.e; es0 = (D.e-B.e) * tmp1;
+    e1 = A.e; es1 = (D.e-A.e) * tmp1;
+    u0 = B.u; us0 = (D.u-B.u) * tmp1;
+    u1 = A.u; us1 = (D.u-A.u) * tmp1;
+    v0 = B.v; vs0 = (D.v-B.v) * tmp1;
+    v1 = A.v; vs1 = (D.v-A.v) * tmp1;
+  }
+  z = floor(A.z);
+  frac = A.z - z;
+  x0 -= frac*xs0; x1 -= frac*xs1;
+  d0 -= frac*ds0; d1 -= frac*ds1;
+  e0 -= frac*es0; e1 -= frac*es1;
+  u0 -= frac*us0; u1 -= frac*us1;
+  v0 -= frac*vs0; v1 -= frac*vs1;
+  while( z >= D.z) {
+    tmp2 = 1.0 / (x1 - x0);
+    rx = ceil(x0);
+    rus0 = (u1 - u0) * tmp2; ru = u0 + (rx - x0) * rus0;
+    rvs0 = (v1 - v0) * tmp2; rv = v0 + (rx - x0) * rvs0;
+    rds0 = (d1 - d0) * tmp2; rd = d0 + (rx - x0) * rds0;
+    res0 = (e1 - e0) * tmp2; re = e0 + (rx - x0) * res0;
+    while (rx < x1) {
+
+      if (rd > 0.0) {
+
+        /* bi-linear lookup into low-res texture map */
+        fl_u = ru * (TEXT_URES-1);
+        u = (int) fl_u; u_frac = fl_u - u;
+        fl_v = (rv - floor(rv)) * (TEXT_VRES-1);
+        v = (int) fl_v; v_frac = fl_v - v;
+        l00 = texture[v   + u*TEXT_VRES];
+        l01 = texture[v+1 + u*TEXT_VRES];
+        l10 = texture[v   + (u+1)*TEXT_VRES];
+        l11 = texture[v+1 + (u+1)*TEXT_VRES];
+        lx0 = l00 + (short)((l10 - l00)*u_frac);
+        lx1 = l01 + (short)((l11 - l01)*u_frac);
+        lxx = lx0 + (short)((lx1 - lx0)*v_frac);
+
+        px = (int) rx;
+        py = (int) z;
+        if (raster[px+py*OUT_XRES]==0) {
+          raster[px + py*OUT_XRES] = (unsigned char) (rd * lxx);
+        } else {
+          new_val = (short) raster[px + py*OUT_XRES] + (short) (rd * lxx);
+          new_val /= 2;
+          if (new_val > 255) raster[px + py*OUT_XRES] = 255;
+          else               raster[px + py*OUT_XRES] = (unsigned char) new_val;
+        }
+
+//        new_val = (short) raster[px + py*OUT_XRES] + (short) (rd * lxx);
+//        new_val /= 2;
+//        if (new_val > 255) raster[px + py*OUT_XRES] = 255;
+//        else               raster[px + py*OUT_XRES] = (unsigned char) new_val;
+
+//        raster[px + py*OUT_XRES] = (unsigned char) (rd * lxx);
+
+//raster[px + py*OUT_XRES] = (unsigned char) (ru * 255);
+//if (py == 316){
+//printf(" x=%.1lf z=%.1lf u=%lf v=%lf texture=%d\n", rx, z, ru, rv, lxx);
+//}
+//      set_vol((short) (lxx*rd), (uLong) rx, (uLong) z);
+
+      }
+
+      ru += rus0; rv += rvs0;
+      rd += rds0; re += res0;
+      rx += 1.0;
+    }
+    x0 -= xs0; x1 -= xs1;
+    d0 -= ds0; d1 -= ds1;
+    e0 -= es0; e1 -= es1;
+    u0 -= us0; u1 -= us1;
+    v0 -= vs0; v1 -= vs1;
+    z -= 1.0;
+  }
+
+} /* end scan_convert() */
+
+
+
+
+void write_image()
+{
+  FILE *fp;
+
+  fp = fopen(out_name, "wb");
+  if (!fp) { printf("Can't open %s\n", out_name); exit(1); }
+  fprintf(fp, "P5\n");
+  fprintf(fp, "%d %d\n%d\n", OUT_XRES, OUT_YRES, 255);
+  fwrite(raster, sizeof(unsigned char), OUT_XRES*OUT_YRES, fp);
+  fclose(fp);
+}
+
+void get_texture()
+{
+  FILE *fp;
+  int xres, yres, maxval, u, v;
+
+  if ((fp = fopen(texture_name, "r")) == 0)
+    { printf("Can't open %s\n", texture_name); exit(1); }
+  
+  fscanf(fp, "P5\n");
+  if (fscanf(fp, "%d %d\n%d\n", &xres, &yres, &maxval) != 3)
+    { printf("Error reading header\n"); exit(1); }
+
+  if (xres != TEXT_URES || yres != TEXT_VRES)
+    { printf("Invalid size for texture map\n"); exit(1); }
+  
+  for ( v=0 ; v<yres ; v++ ) 
+    for ( u=0 ; u<xres ; u++ )
+      texture[v+u*TEXT_VRES] = (unsigned char) getc(fp);
+
+  fclose(fp);
+
+  printf("Read texture %s (%dx%d)\n", texture_name, TEXT_URES, TEXT_VRES);
+}
+
+void read_spline(
+int sp_num
+)
+{
+  FILE *fp;
+  int i;
+
+  if ((fp = fopen(splines[sp_num], "r")) == 0)
+    { printf("Can't open %s\n", splines[sp_num]); exit(1); }
+
+  for ( i=0 ; i<NUM_POINTS ; i++ ) {
+    fscanf(fp, "%lf %lf %lf\n", &(spX[i]), &(spY[i]), &(spZ[i]));
+  }
+
+  fclose(fp);
+
+  printf("Read spline %s\n", splines[sp_num]);
+}
+
+void read_uv(
+int sp_num
+)
+{
+  FILE *fp;
+  int i, tmp;
+
+  if ((fp = fopen(uvfiles[sp_num], "r")) == 0)
+    { printf("Can't open %s\n", uvfiles[sp_num]); exit(1); }
+
+  for ( i=0 ; i<NUM_POINTS ; i++ ) {
+    fscanf(fp, "%d %f\n", &tmp, &(uv[i]));
+  }
+
+  fclose(fp);
+
+  printf("Read uv %s\n", uvfiles[sp_num]);
+}
+
+void read_brightness(
+int sp_num
+)
+{
+  FILE *fp;
+  int i,tmp;
+
+  if ((fp = fopen(brightfiles[sp_num], "r")) == 0)
+    { printf("Can't open %s\n", brightfiles[sp_num]); exit(1); }
+
+  /* read in brightness number for each control point */
+  for ( i=0 ; i<NUM_POINTS ; i++ ) {
+    fscanf(fp, "%d %f\n", &tmp, &(brightness[i]));
+    if ( i != tmp) {
+      printf("Error reading brightness\n");
+      exit(1);
+    }
+  }
+  fclose(fp);
+
+  printf("Read brightness %s\n", brightfiles[sp_num]);
+}
+
+Point spline_point(double u)
+{
+  Point P;
+  int i;
+  double u1, u2, u3;
+  double w1, w2, w3, w4;
+  
+  i = (int) u;
+  if (i < 1 || i>=NUM_POINTS-2)
+    { P.x = P.y = P.z = 0.0; return P; } 
+    
+  u1 = u - i;
+  u2 = u1 * u1;
+  u3 = u2 * u1;
+
+  w1 = -0.5*u3 +     u2 - 0.5*u1;
+  w2 =  1.5*u3 - 2.5*u2 + 1.0;
+  w3 = -1.5*u3 + 2.0*u2 + 0.5*u1;
+  w4 =  0.5*u3 - 0.5*u2;
+
+  P.x = w1*spX[i-1] + w2*spX[i] + w3*spX[i+1] + w4*spX[i+2];
+  P.y = w1*spY[i-1] + w2*spY[i] + w3*spY[i+1] + w4*spY[i+2];
+  P.z = w1*spZ[i-1] + w2*spZ[i] + w3*spZ[i+1] + w4*spZ[i+2];
+
+  return P;
+
+}
+
+float interp_uv(double u)
+{
+  float result;
+  int i;
+  double u1, u2, u3;
+  double w1, w2, w3, w4;
+
+  i = (int) u;
+
+  if (i<1) return uv[1];
+  if (i>=NUM_POINTS-2) return uv[NUM_POINTS-2];
+
+  u1 = u - i;
+  u2 = u1 * u1;
+  u3 = u2 * u1;
+
+  w1 = -0.5*u3 +     u2 - 0.5*u1;
+  w2 =  1.5*u3 - 2.5*u2 + 1.0;
+  w3 = -1.5*u3 + 2.0*u2 + 0.5*u1;
+  w4 =  0.5*u3 - 0.5*u2;
+
+  result = w1 * uv[i-1] + w2 * uv[i] + w3 * uv[i+1] + w4 * uv[i+2];
+
+  return result;
+}
+
+float interp_brightness(double u)
+{
+  float result;
+  int i;
+  double u1, u2, u3;
+  double w1, w2, w3, w4;
+
+  i = (int) u;
+
+  if (i<1) return brightness[1];
+  if (i>=NUM_POINTS-2) return brightness[NUM_POINTS-2];
+
+  u1 = u - i;
+  u2 = u1 * u1;
+  u3 = u2 * u1;
+
+  w1 = -0.5*u3 +     u2 - 0.5*u1;
+  w2 =  1.5*u3 - 2.5*u2 + 1.0;
+  w3 = -1.5*u3 + 2.0*u2 + 0.5*u1;
+  w4 =  0.5*u3 - 0.5*u2;
+
+  result = w1 * brightness[i-1] + w2 * brightness[i]
+         + w3 * brightness[i+1] + w4 * brightness[i+2];
+
+  return result;
+}
+
+main()
+{
+  int i,j,c,p;int ri, rj;
+  double seg, seg_step;
+  double tmp0, tmp1, v0, v1;
+  Point a;
+  Point iP[4];
+  Vector iV[4], iN[4], iC[4];
+  Point Q[4];
+  const double center = (OUT_XRES-1) / 2.0;
+  const double radius2 = (OUT_XRES-1)*(OUT_XRES-1) / 4.0;
+  Ray R;
+  double Dist, phi[4], theta[4], lat[4], lon[4];
+  Vertex P1, P2, P3;
+  double pixel_i[4], pixel_j[4];
+
+  for ( i=0 ; i<OUT_XRES*OUT_YRES ; i++ ) raster[i] = 0;
+ 
+  get_texture();
+
+  for ( c=0 ; c<NUM_SPLINES ; c++ ) {
+
+    read_spline(c);
+    read_brightness(c);
+    read_uv(c);
+
+    seg_step = seg_step_size[c];
+
+    for ( seg=1.0 ; seg<98.0 ; seg+=seg_step ) {
+
+      printf("Spline %d segment %lf to %lf\n", c, seg, seg+seg_step);
+      a = spline_point(seg+seg_step);
+//      printf("  P=<%lf,%lf,%lf\n", a.x, a.y, a.z);
+
+      iP[0] = spline_point(seg);
+      iP[1] = spline_point(seg+seg_step);
+      iP[2] = spline_point(seg+seg_step+seg_step);
+      iP[3] = spline_point(seg+seg_step+seg_step+seg_step);
+
+      iP[0] = multiply(6471.0, normalize(iP[0]));
+      iP[1] = multiply(6471.0, normalize(iP[1]));
+      iP[2] = multiply(6471.0, normalize(iP[2]));
+      iP[3] = multiply(6471.0, normalize(iP[3]));
+
+      iV[1] = normalize(subtract(iP[2], iP[0]));
+      iV[2] = normalize(subtract(iP[3], iP[1]));
+
+      iN[1] = normalize(iP[1]);
+      iN[2] = normalize(iP[2]);
+
+      iC[1] = cross(iV[1], iN[1]);
+      iC[2] = cross(iV[2], iN[2]);
+
+      /* the 4 corner points of lower bound of curtain */
+      Q[0] = add(iP[1], multiply( CurtainWidth*0.5, iC[1]));
+      Q[1] = add(iP[1], multiply(-CurtainWidth*0.5, iC[1]));
+      Q[2] = add(iP[2], multiply(-CurtainWidth*0.5, iC[2]));
+      Q[3] = add(iP[2], multiply( CurtainWidth*0.5, iC[2]));
+
+      Q[0] = normalize(Q[0]);
+      Q[1] = normalize(Q[1]);
+      Q[2] = normalize(Q[2]);
+      Q[3] = normalize(Q[3]);
+
+//      printf("  Q0=<%lf,%lf,%lf\n", Q[0].x, Q[0].y, Q[0].z);
+//      printf("  Q1=<%lf,%lf,%lf\n", Q[1].x, Q[1].y, Q[1].z);
+//      printf("  Q2=<%lf,%lf,%lf\n", Q[2].x, Q[2].y, Q[2].z);
+//      printf("  Q3=<%lf,%lf,%lf\n", Q[3].x, Q[3].y, Q[3].z);
+
+      /* determine the latitude/longitude of each point */
+      for ( i=0 ; i<4 ; i++ ) {
+        Dist = Q[i].x*Q[i].x + Q[i].z*Q[i].z;
+        if (Dist < 0.000001) {
+          /* north pole - shouldn't really happen with aurora */
+          phi[i] = 0.0; theta[i] = 0.0;
+        } else {
+          Dist = sqrt(Dist);
+          phi[i] = acos(Q[i].y);
+          if (Q[i].x>=0.0) theta[i] = M_PI - acos(Q[i].z/Dist);
+          else             theta[i] = acos(Q[i].z/Dist) - M_PI;
+        }
+        lat[i] = 90.0 - (phi[i] * RAD2DEG); /* invert as north pole is lat=90 */;
+        lon[i] = (theta[i] * RAD2DEG);      /* long=0 is down -z axis */
+
+        if (lat[i] < LOWER_LAT_RANGE) { printf("Lat out of range\n"); exit(1); }
+
+//        printf("  Q[%d]: lat=%lf lon=%lf\n", i, lat[i], lon[i]);
+
+        pixel_i[i] = ((lon[i] + 180.0) / 360.0) * OUT_XRES;
+        pixel_j[i] = ((lat[i] - LOWER_LAT_RANGE) / LAT_RANGE) * OUT_YRES; 
+
+//        printf(" pixel = [%lf,%lf]\n", pixel_i[i], pixel_j[i]);
+
+//        raster[ri+rj*OUT_XRES] = 255;
+
+      }
+
+      /* create u/v coordinates */
+      tmp0 = interp_uv(seg+seg_step);
+//      v0 = tmp0 - floor(tmp0);
+      v0 = tmp0;
+      tmp1 = interp_uv(seg+seg_step+seg_step);
+//      v1 = tmp1 - floor(tmp1);
+      v1 = tmp1;
+//      printf(" v0 = %lf v1 = %lf\n", v0, v1);
+//      printf(" v0 = %lf v1 = %lf\n", v0*TEXT_VRES, v1*TEXT_VRES);
+
+      /* don't use y, x==u and z==v in texture coordinates */
+      P1.x = pixel_i[0];  P2.x = pixel_i[1]; P3.x = pixel_i[2];
+      P1.y = 0.0;         P2.y = 0.0;        P3.y = 0.0;
+      P1.z = pixel_j[0];  P2.z = pixel_j[1]; P3.z = pixel_j[2];
+      P1.u = 0.0;         P2.u = 1.0;        P3.u = 1.0;
+      P1.v = v0;          P2.v = v0;         P3.v = v1;
+      P1.d = P2.d = interp_brightness(seg+seg_step);
+      P3.d = interp_brightness(seg+seg_step+seg_step);
+
+      scan_convert(P1, P2, P3);
+
+      P1.x = pixel_i[0];  P2.x = pixel_i[3]; P3.x = pixel_i[2];
+      P1.y = 0.0;         P2.y = 0.0;        P3.y = 0.0;
+      P1.z = pixel_j[0];  P2.z = pixel_j[3]; P3.z = pixel_j[2];
+      P1.u = 0.0;         P2.u = 0.0;        P3.u = 1.0;
+      P1.v = v0;          P2.v = v1;         P3.v = v1;
+      P1.d = interp_brightness(seg+seg_step);
+      P2.d = P3.d = interp_brightness(seg+seg_step+seg_step);
+
+      scan_convert(P1, P2, P3);
+
+
+    }
+
+  }
+
+  write_image();
+
+  exit(0);
+}
+
+

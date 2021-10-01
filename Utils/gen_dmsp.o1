@@ -1,0 +1,303 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "rays.h"
+
+#define DEG2RAD (M_PI/180.0)
+#define RAD2DEG (180.0/M_PI)
+
+#define LOWER_LAT_RANGE 45.0
+#define LAT_RANGE 45.0
+
+#define CurtainWidth 60.0
+
+/* info to read the texture map */
+#define TEXT_XRES 128
+#define TEXT_YRES 4096
+static unsigned char texture[TEXT_XRES*TEXT_YRES];
+static char *texture_name = "/Genetti/Hayden/05-10-31/128/snap0150.pbm";
+
+/* info of file to write out */
+#define OUT_XRES 2000
+#define OUT_YRES  500
+static unsigned char raster[OUT_XRES*OUT_YRES];
+static char *out_name = "dmsp_00480.pgm";
+
+/* spline files to read in */
+#define NUM_SPLINES 4
+#define NUM_POINTS 103
+static char *splines[NUM_SPLINES] =
+  { "22100_2.data", "22100_3.data", "22100_4.data", "22100_1.data" };
+static char *uvfiles[NUM_SPLINES] =
+  { "2.uv", "3.uv", "4.uv", "1.uv"};
+static double seg_step_size[NUM_SPLINES] = { 1.0, 1.0, 1.0, 1.0 };
+#if 0
+static double seg_step_size[NUM_SPLINES] = { 0.08, 0.06, 0.025, 0.02 };
+#endif
+/* 0.02, 0.08, 0.06, 0.025 */
+static double spX[NUM_POINTS];
+static double spY[NUM_POINTS];
+static double spZ[NUM_POINTS];
+static float  uv[NUM_POINTS];
+
+typedef struct { Point v[4]; double tu[4]; double tv[4]; Vector n; double d; } Polygon;
+
+#define MAX_POLYS 100000
+static int n_polys=0;
+static Polygon polys[MAX_POLYS];
+
+void write_image()
+{
+  FILE *fp;
+
+  fp = fopen(out_name, "wb");
+  if (!fp) { printf("Can't open %s\n", out_name); exit(1); }
+  fprintf(fp, "P5\n");
+  fprintf(fp, "%d %d\n%d\n", OUT_XRES, OUT_YRES, 255);
+  fwrite(raster, sizeof(unsigned char), OUT_XRES*OUT_YRES, fp);
+  fclose(fp);
+}
+
+void get_texture()
+{
+  FILE *fp;
+  int xres, yres, maxval, u, v;
+
+  if ((fp = fopen(texture_name, "r")) == 0)
+    { printf("Can't open %s\n", texture_name); exit(1); }
+  
+  fscanf(fp, "P5\n");
+  if (fscanf(fp, "%d %d\n%d\n", &xres, &yres, &maxval) != 3)
+    { printf("Error reading header\n"); exit(1); }
+
+  if (xres != TEXT_XRES || yres != TEXT_YRES)
+    { printf("Invalid size for texture map\n"); exit(1); }
+  
+  for ( v=0 ; v<yres ; v++ ) 
+    for ( u=0 ; u<xres ; u++ )
+      texture[v+u*TEXT_YRES] = (unsigned char) getc(fp);
+
+  fclose(fp);
+
+  printf("Read texture %s (%dx%d)\n", texture_name, TEXT_XRES, TEXT_YRES);
+}
+
+void read_spline(
+int sp_num
+)
+{
+  FILE *fp;
+  int i;
+
+  if ((fp = fopen(splines[sp_num], "r")) == 0)
+    { printf("Can't open %s\n", splines[sp_num]); exit(1); }
+
+  for ( i=0 ; i<NUM_POINTS ; i++ ) {
+    fscanf(fp, "%lf %lf %lf\n", &(spX[i]), &(spY[i]), &(spZ[i]));
+  }
+
+  fclose(fp);
+
+  printf("Read spline %s\n", splines[sp_num]);
+}
+
+void read_uv(
+int sp_num
+)
+{
+  FILE *fp;
+  int i, tmp;
+
+  if ((fp = fopen(uvfiles[sp_num], "r")) == 0)
+    { printf("Can't open %s\n", uvfiles[sp_num]); exit(1); }
+
+  for ( i=0 ; i<NUM_POINTS ; i++ ) {
+    fscanf(fp, "%d %f\n", &tmp, &(uv[i]));
+  }
+
+  fclose(fp);
+
+  printf("Read uv %s\n", uvfiles[sp_num]);
+}
+
+Point spline_point(double u)
+{
+  Point P;
+  int i;
+  double u1, u2, u3;
+  double w1, w2, w3, w4;
+  
+  i = (int) u;
+  if (i < 1 || i>=NUM_POINTS-2)
+    { P.x = P.y = P.z = 0.0; return P; } 
+    
+  u1 = u - i;
+  u2 = u1 * u1;
+  u3 = u2 * u1;
+
+  w1 = -0.5*u3 +     u2 - 0.5*u1;
+  w2 =  1.5*u3 - 2.5*u2 + 1.0;
+  w3 = -1.5*u3 + 2.0*u2 + 0.5*u1;
+  w4 =  0.5*u3 - 0.5*u2;
+
+  P.x = w1*spX[i-1] + w2*spX[i] + w3*spX[i+1] + w4*spX[i+2];
+  P.y = w1*spY[i-1] + w2*spY[i] + w3*spY[i+1] + w4*spY[i+2];
+  P.z = w1*spZ[i-1] + w2*spZ[i] + w3*spZ[i+1] + w4*spZ[i+2];
+
+  return P;
+
+}
+
+float interp_uv(double u)
+{
+  float result;
+  int i;
+  double u1, u2, u3;
+  double w1, w2, w3, w4;
+
+  i = (int) u;
+
+  if (i<1) return uv[1];
+  if (i>=NUM_POINTS-2) return uv[NUM_POINTS-2];
+
+  u1 = u - i;
+  u2 = u1 * u1;
+  u3 = u2 * u1;
+
+  w1 = -0.5*u3 +     u2 - 0.5*u1;
+  w2 =  1.5*u3 - 2.5*u2 + 1.0;
+  w3 = -1.5*u3 + 2.0*u2 + 0.5*u1;
+  w4 =  0.5*u3 - 0.5*u2;
+
+  result = w1 * uv[i-1] + w2 * uv[i] + w3 * uv[i+1] + w4 * uv[i+2];
+
+  return result;
+}
+
+main()
+{
+  int i,j,c,p;int ri, rj;
+  double seg, seg_step;
+  double tmp0, tmp1, v0, v1;
+  Point a;
+  Point iP[4];
+  Vector iV[4], iN[4], iC[4];
+  Point Q[4];
+  const double center = (OUT_XRES-1) / 2.0;
+  const double radius2 = (OUT_XRES-1)*(OUT_XRES-1) / 4.0;
+  Ray R;
+  double Dist, phi[4], theta[4], lat[4], lon[4];
+
+  
+  get_texture();
+
+  for ( c=0 ; c<NUM_SPLINES ; c++ ) {
+
+    read_spline(c);
+    read_uv(c);
+
+    seg_step = seg_step_size[c];
+
+    for ( seg=1.0 ; seg<98.0 ; seg+=seg_step ) {
+
+      printf("Spline %d segment %lf to %lf\n", c, seg, seg+seg_step);
+      a = spline_point(seg+seg_step);
+//      printf("  P=<%lf,%lf,%lf\n", a.x, a.y, a.z);
+
+      iP[0] = spline_point(seg);
+      iP[1] = spline_point(seg+seg_step);
+      iP[2] = spline_point(seg+seg_step+seg_step);
+      iP[3] = spline_point(seg+seg_step+seg_step+seg_step);
+
+      iP[0] = multiply(6471.0, normalize(iP[0]));
+      iP[1] = multiply(6471.0, normalize(iP[1]));
+      iP[2] = multiply(6471.0, normalize(iP[2]));
+      iP[3] = multiply(6471.0, normalize(iP[3]));
+
+      iV[1] = normalize(subtract(iP[2], iP[0]));
+      iV[2] = normalize(subtract(iP[3], iP[1]));
+
+      iN[1] = normalize(iP[1]);
+      iN[2] = normalize(iP[2]);
+
+      iC[1] = cross(iV[1], iN[1]);
+      iC[2] = cross(iV[2], iN[2]);
+
+      /* the 4 corner points of lower bound of curtain */
+      Q[0] = add(iP[1], multiply( CurtainWidth*0.5, iC[1]));
+      Q[1] = add(iP[1], multiply(-CurtainWidth*0.5, iC[1]));
+      Q[2] = add(iP[2], multiply(-CurtainWidth*0.5, iC[2]));
+      Q[3] = add(iP[2], multiply( CurtainWidth*0.5, iC[2]));
+
+      Q[0] = normalize(Q[0]);
+      Q[1] = normalize(Q[1]);
+      Q[2] = normalize(Q[2]);
+      Q[3] = normalize(Q[3]);
+
+//      printf("  Q0=<%lf,%lf,%lf\n", Q[0].x, Q[0].y, Q[0].z);
+//      printf("  Q1=<%lf,%lf,%lf\n", Q[1].x, Q[1].y, Q[1].z);
+//      printf("  Q2=<%lf,%lf,%lf\n", Q[2].x, Q[2].y, Q[2].z);
+//      printf("  Q3=<%lf,%lf,%lf\n", Q[3].x, Q[3].y, Q[3].z);
+
+      /* determine the latitude/longitude of each point */
+      for ( i=0 ; i<4 ; i++ ) {
+        Dist = Q[i].x*Q[i].x + Q[i].z*Q[i].z;
+        if (Dist < 0.000001) {
+          /* north pole - shouldn't really happen with aurora */
+          phi[i] = 0.0; theta[i] = 0.0;
+        } else {
+          Dist = sqrt(Dist);
+          phi[i] = acos(Q[i].y);
+          if (Q[i].x>=0.0) theta[i] = M_PI - acos(Q[i].z/Dist);
+          else             theta[i] = acos(Q[i].z/Dist) - M_PI;
+        }
+        lat[i] = 90.0 - (phi[i] * RAD2DEG); /* invert as north pole is lat=90 */;
+        lon[i] = (theta[i] * RAD2DEG);      /* long=0 is down -z axis */
+
+        if (lat[i] < LOWER_LAT_RANGE) { printf("Lat out of range\n"); exit(1); }
+
+//        printf("  Q[%d]: lat=%lf lon=%lf\n", i, lat[i], lon[i]);
+
+        ri = ((lon[i] + 180.0) / 360.0) * OUT_XRES;
+        rj = ((lat[i] - LOWER_LAT_RANGE) / LAT_RANGE) * OUT_YRES; 
+
+//        printf(" pixel = [%d,%d]\n", ri, rj);
+
+        raster[ri+rj*OUT_XRES] = 255;
+
+      }
+
+      /* create u/v coordinates */
+      tmp0 = interp_uv(seg+seg_step);
+      v0 = tmp0 - floor(tmp0);
+      tmp1 = interp_uv(seg+seg_step+seg_step);
+      v1 = tmp1 - floor(tmp1);
+      printf(" v0 = %lf v1 = %lf\n", v0*TEXT_YRES, v1*TEXT_YRES);
+
+      /* scan convert this polygon */
+
+
+
+#if 0
+
+      polys[n_polys].v[0] = Q[0]; polys[n_polys].tu[0] = 0.0; polys[n_polys].tv[0] = v0;
+      polys[n_polys].v[1] = Q[1]; polys[n_polys].tu[1] = 1.0; polys[n_polys].tv[1] = v0;
+      polys[n_polys].v[2] = Q[2]; polys[n_polys].tu[2] = 1.0; polys[n_polys].tv[2] = v1;
+      polys[n_polys].v[3] = Q[3]; polys[n_polys].tu[3] = 0.0; polys[n_polys].tv[3] = v1;
+      polys[n_polys].n  = normalize(cross(subtract(Q[1],Q[0]),subtract(Q[2],Q[0])));
+      polys[n_polys].d  = dot_product( negate(Q[0]), polys[n_polys].n);
+      n_polys ++;
+#endif
+
+    }
+
+  }
+
+  printf("Number of polys processed = %d\n", n_polys);
+
+  write_image();
+
+  exit(0);
+}
+
+
