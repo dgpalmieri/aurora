@@ -1,0 +1,10 @@
+*.pbm
+*.pbm.gz
+below_*
+*.o
+*.ppm
+epr.gre
+epr.red
+epr
+sp2ppm
+*.a
