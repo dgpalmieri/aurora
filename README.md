@@ -84,4 +84,12 @@ There are serveral options for opening the `*.ppm` Inkscape or Infraview can be 
 
 ## Making a video
 
-TODO figure out how to render the video from `*.ppm`
+### FFMPEG
+
+ffmpeg is a free way to make a ppm into a video.  
+Install with `sudo apt install ffmpeg`
+
+To render a sequence into a video you can use the following command  
+`ffmpeg -pattern_type glob -s 1920x1920 -framerate 25 -i "*.ppm" output_vid.avi`
+
+This will grab all ppm files in the directory set framerate to 25 and the scale at 1920x1920. the output file will be `output_vid.avi`, feel free to mess around with these as you make different changes to renders.
