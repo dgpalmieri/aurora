@@ -1,5 +1,5 @@
-
+#!/bin/bash
 #render range 1
-./epr.gre se59_16K cam.se59 -range 5800 7400 1 below -res 4096 4096
-./epr.red se59_08K cam.se59 -range 5800 7400 1 below -res 4096 4096
+./epr.gre se59_08K cam.se59 -range 7400 7400 1 below -res 4096 4096
+#./epr.red se59_08K cam.se59 -range 5800 7400 1 below -res 4096 4096
 
