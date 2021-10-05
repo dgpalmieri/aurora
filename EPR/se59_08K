@@ -53,9 +53,9 @@ CurtainFrameBegin: 283.03333333
 CurtainFrameInc: 0.03333333
 #
 CurtainWidth: 60.0
-CurtainTexturePath: /Genetti/Hayden/06-02-05/%03d/turb%04d.pbm
-CurtainResLowest: 4
-CurtainResHighest: 512
+CurtainTexturePath: ../textures/06-02-05/%03d/turb%04d.pbm
+CurtainResLowest: 128
+CurtainResHighest: 128
 #
 # size of the volume dataset (in km)
 #
