@@ -30,7 +30,6 @@ oldfraw2ppm: oldfraw2ppm.c
 
 sp2ppm: sp2ppm.c
 	$(CC) sp2ppm.c -o sp2ppm -lm
-	cp sp2ppm /Users/genetti/bin/sp2ppm
 
 e2ppm: e2ppm.c
 	$(CC) e2ppm.c -o e2ppm -lm
