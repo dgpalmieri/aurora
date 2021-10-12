@@ -7,13 +7,14 @@
 #include "raster.h"
 #include "err_msg.h"
 #include "view.h"
+#include "timing.h"
 
 #define WHITESPACE " :,\t\n"
 
 /* HACK */
 #define NUM_POINTS 103
 
-static char *asteriks = "********************************************************************************\n";
+static char *asterisks = "********************************************************************************\n";
 
 /***** read in from the configuration file and passed to render.c *****/
 
@@ -157,9 +158,10 @@ FILE *fp
       }
     }
 
-/*
+#if 0
 printf("fr=%d num_points[0][0] = %d\n", fr, num_points[0][0]);
-*/
+#endif
+
   } 
 
   if (fr == MAX_FRAMES) {
@@ -183,13 +185,24 @@ FILE *fp
 
   /* read in visibility number for each frame */
   for ( i=0 ; i<num_frames[c] ; i++ ) {
-    fscanf(fp, "%d %f\n", &tmp, &(visible[c][i]));
-    if ( i != tmp) {
-      printf("Error reading visibility\n");
+    if ( fscanf(fp, "%d %f\n", &tmp, &(visible[c][i])) != 2 ) {
+      printf("Error reading visibility - format\n");
+      fclose(fp);
       exit(1);
     }
-/*  printf("curtain=%d frame=%d visibility=%f\n", c, i, visible[c][i]);*/
+    if ( i != tmp) {
+      printf("Error reading visibility - frames\n");
+      fclose(fp);
+      exit(1);
+    }
+
+#if 0
+printf("curtain=%d frame=%d visibility=%f\n", c, i, visible[c][i]);
+#endif
+
   }
+
+  return 1;
 
 }
 
@@ -202,13 +215,24 @@ int c
 
   /* read in brightness number for each control point */
   for ( i=0 ; i<NUM_POINTS ; i++ ) {
-    fscanf(fp, "%d %f\n", &tmp, &(brightness[c][i]));
+    if ( fscanf(fp, "%d %f\n", &tmp, &(brightness[c][i])) != 2 ) {
+       printf("Error reading brightness - format\n");
+       fclose(fp);
+       exit(1);
+    }
     if ( i != tmp) {
-      printf("Error reading brightness\n");
+      printf("Error reading brightness - frames\n");
+      fclose(fp);
       exit(1);
     }
-/*  printf("curtain=%d frame=%d brightness=%f\n", c, i, brightness[c][i]);*/
+
+#if 0
+printf("curtain=%d frame=%d brightness=%f\n", c, i, brightness[c][i]);
+#endif
+
   }
+
+  return 1;
 
 }
 
@@ -221,13 +245,24 @@ int c
 
   /* read in uv mapping value for each control point */
   for ( i=0 ; i<NUM_POINTS ; i++ ) {
-    fscanf(fp, "%d %f\n", &tmp, &(uv[c][i]));
-    if ( i != tmp) {
-      printf("Error reading uv mapping\n");
+    if ( fscanf(fp, "%d %f\n", &tmp, &(uv[c][i])) != 2 ) {
+      printf("Error reading UV mapping - format\n");
+      fclose(fp);
       exit(1);
     }
-/*  printf("curtain=%d frame=%d uv=%f\n", c, i, uv[c][i]);*/
+    if ( i != tmp) {
+      printf("Error reading UV mapping - frames\n");
+      fclose(fp);
+      exit(1);
+    }
+
+#if 0
+printf("curtain=%d frame=%d uv=%f\n", c, i, uv[c][i]);
+#endif
+
   }
+
+  return 1;
 
 }
 
@@ -242,13 +277,24 @@ FILE *fp
 
   /* read in texture number for each frame */
   for ( i=0 ; i<num_frames[c] ; i++ ) {
-    fscanf(fp, "%d %f\n", &tmp, &(texture[c][i]));
+    if ( fscanf(fp, "%d %f\n", &tmp, &(texture[c][i])) != 2 ) {
+       printf("Error reading texture - format\n");
+       fclose(fp);
+       exit(1);
+    }
     if ( i != tmp) {
-      printf("Error reading texture\n");
+      printf("Error reading texture - frames\n");
+      fclose(fp);
       exit(1);
     }
-/*  printf("curtain=%d frame=%d texture=%f\n", c, i, texture[c][i]);*/
+
+#if 0
+printf("curtain=%d frame=%d texture=%f\n", c, i, texture[c][i]);
+#endif
+
   }
+
+  return 1;
 
 }
 
@@ -300,14 +346,14 @@ FILE *fp
   return 1;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   FILE   *parms;            /* pointer to parameter file */
   char    inputline[256];   /* holds line read in from file */
   char   *tokens;           /* use to break inputline into tokens */
   int     lineno;           /* line number being read in file */
   int     it1, it2, it3;    /* temp holders for ints read in */
-  FILE   *camra;            /* file pointer to camera matrix file */
+  FILE   *camera_matrix;    /* file pointer to camera matrix file */
   int     next_arg;         /* used to step thru arg list */
   int     cam_start = 0;    /* first camera (in camera file) to render */
   int     cam_end   = 0;    /* last camera (in camera file) to render */
@@ -589,7 +635,11 @@ main(int argc, char *argv[])
     higher = CurtainResLowest*2;
     while (higher<CurtainResHighest) {
       area = CurtainWidth / higher;
-/*    printf("Area(%d) = %lf\n", higher, area);*/
+
+#if 0
+printf("Area(%d) = %lf\n", higher, area);
+#endif
+
       if (area < target_area) break;
       lower *= 2;
       higher *= 2;
@@ -626,7 +676,7 @@ main(int argc, char *argv[])
   s.xres =  400;
   s.yres =  400;
 
-  if ((camra = fopen(argv[2], "r")) == 0) ERROR_BAD_OPEN(argv[2])
+  if ((camera_matrix = fopen(argv[2], "r")) == 0) ERROR_BAD_OPEN(argv[2])
 
   /* arg 3 could be -range */
   next_arg = 3;
@@ -663,7 +713,7 @@ main(int argc, char *argv[])
       for ( k=0 ; k<num_curtains ; k++ ) 
         UVflow[k] = baseUVflow[k]*i;
 
-      if (fgets(inputline, 255, camra) == NULL)
+      if (fgets(inputline, 255, camera_matrix) == NULL)
         ERROR_MSG("End of file reached in camera file")
       lineno++;
       if (inputline[0] == '#') continue;  /* ignore comments */
@@ -768,35 +818,35 @@ main(int argc, char *argv[])
     set_view_matrix((double *)cam);
 
 #if DO_GREEN
-    printf("\n"); printf(asteriks);
+    printf("\n"); printf("%s", asterisks);
     sprintf(raw_file, "%s_%05d.green", base_name, i);
     printf("  Rendering %s at %d x %d ...\n", raw_file, s.xres, s.yres);
     printf("  Curtain Frame=%lf Camera=%i\n", CurtainFrameNum, cam_read);
-    printf(asteriks);
+    printf("%s", asterisks);
     render_image(raw_file, i, GREEN_CHANNEL);
 #endif
 
 #if DO_MAGENTA
-    printf("\n"); printf(asteriks);
+    printf("\n"); printf("%s", asterisks);
     sprintf(raw_file, "%s_%05d.magenta", base_name, i);
     printf("  Rendering %s at %d x %d ...\n", raw_file, s.xres, s.yres);
     printf("  Curtain Frame=%lf Camera=%i\n", CurtainFrameNum, cam_read);
-    printf(asteriks);
+    printf("%s", asterisks);
     render_image(raw_file, i, MAGENTA_CHANNEL);
 #endif
 
 #ifdef DO_RED
-    printf("\n"); printf(asteriks);
+    printf("\n"); printf("%s", asterisks);
     sprintf(raw_file, "%s_%05d.red", base_name, i);
     printf("  Rendering %s at %d x %d ...\n", raw_file, s.xres, s.yres);
     printf("  Curtain Frame=%lf Camera=%i\n", CurtainFrameNum, cam_read);
-    printf(asteriks);
+    printf("%s", asterisks);
     render_image(raw_file, i, RED_CHANNEL);
 #endif
 
   }
 
-  fclose(camra);
+  fclose(camera_matrix);
 
 }
 
