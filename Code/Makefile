@@ -87,3 +87,7 @@ eview: eview.c
 	$(CC) $(LFLAGS) -L$(LIB) eview.c -o eview \
 	-lGL -lGLU /System/Library/Frameworks/GLUT.framework/GLUT -lobjc
 
+clean:
+	rm -f eview pot2volc pot2ppm pot2alpha pot2energy pot_interp \
+	slicer expose fraw2ppm e2ppm e2ppmB e2ppmS e2ppmBS sp2ppm bench_dep bench_trilerp \
+	ppmcrop gamma oldfraw2ppm energy2ppm

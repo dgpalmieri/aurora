@@ -70,4 +70,5 @@ libaurora.a :: write_potential.h write_potential.c
 	ranlib libaurora.a
 	rm -f write_potential.o
 
-
+clean:
+	rm -f *.o libaurora.a
