@@ -9,7 +9,10 @@ Notes from class 2021-09-30:
 Utils/rays.c are almost exactly the same)
 - We are currently missing some textures, which Genetti will be providing later
 
+### Decompressing the Textures
 
+Run `tar zxvf textures.tar.gz` at the top level of the repository to un-gzip and un-tar the
+textures tarball - this should automatically put all the textures where they need to go.
 
 ## Build EPR
 
@@ -92,4 +95,4 @@ Install with `sudo apt install ffmpeg`
 To render a sequence into a video you can use the following command  
 `ffmpeg -pattern_type glob -s 1920x1920 -framerate 25 -i "*.ppm" output_vid.avi`
 
-This will grab all ppm files in the directory, set framerate to 25 and the scale at 1920x1920. the output file will be `output_vid.avi`, feel free to mess around with these as you make different changes to renders.
+This will grab all ppm files in the directory, set framerate to 25 and the scale at 1920x1920. The output file will be `output_vid.avi`, feel free to mess around with these as you make different changes to renders.
