@@ -9,7 +9,10 @@ Notes from class 2021-09-30:
 Utils/rays.c are almost exactly the same)
 - We are currently missing some textures, which Genetti will be providing later
 
+### Decompressing the Textures
 
+Run `tar zxvf textures.tar.gz` at the top level of the repository to un-gzip and un-tar the
+textures tarball - this should automatically put all the textures where they need to go.
 
 ## Build EPR
 
