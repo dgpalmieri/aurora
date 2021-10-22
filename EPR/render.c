@@ -2034,13 +2034,13 @@ int   color_band
   /* for each curtain, build a volume and then render to raster */
   for ( cur=0 ; cur<num_curtains ; cur++ ) {
 
-    printf("\n"); printf(sharps);
+    printf("\n"); printf("%s", sharps);
     printf("FRAME: %d | Start of Curtain %d: ",frame, cur);
     f0 = (int) CurtainFrameNum; f1 = f0+1;
     frac = CurtainFrameNum - f0;
     if (visible[cur][f0] < 0.00001 && visible[cur][f1] < 0.00001) {
       printf("  it's not visible!\n");
-      printf(sharps);
+      printf("%s", sharps);
       continue;
     }
 
@@ -2049,7 +2049,7 @@ int   color_band
       /* lerp to get the texture frame number */
       itexture = texture[cur][f0] + (texture[cur][f1]-texture[cur][f0])*frac;
       printf("texture frame %lf\n", itexture);
-      printf(sharps);
+      printf("%s", sharps);
 
       /* grab the texture maps for this curtain frame number */
       get_turbulence_map(cur, itexture);
@@ -2088,7 +2088,7 @@ int   color_band
       RENDER_YMAX = (vol_yres * (slab+1)) / NUM_SLABS;
       if (RENDER_YMAX >= vol_yres) vol_yres-1;
       printf("\n");
-      printf(dashes);
+      printf("%s", dashes);
       printf("Frame %d | Curtain %d: ",frame, cur);
       if (color_band == GREEN_CHANNEL) printf("Green ");
       else if (color_band == RED_CHANNEL) printf("Red ");
@@ -2098,7 +2098,7 @@ int   color_band
       totalEndTime = get_time(totalStartTime);
       totalTime = totalEndTime/get_freq();
       print_timing(" frame time:", totalTime, "\n");
-      printf(dashes);
+      printf("%s", dashes);
       channelTime = totalVolTime + totalRenderTime;
       print_timing("  Channel Time:", channelTime, "\n");
 

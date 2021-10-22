@@ -26,4 +26,4 @@ typedef struct {
 void stackpush(stackTop *theStack, OCTREE *o, stackElement min, stackElement max);
 int  stackpop (stackTop *theStack, stackData *topData);
 void stackinit(stackTop *theStack);
-void stackdestory(stackTop *theStack);
+void stackdestroy(stackTop *theStack);

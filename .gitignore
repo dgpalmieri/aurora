@@ -3,9 +3,9 @@
 below_*
 *.o
 *.ppm
-epr.gre
-epr.red
-epr
-sp2ppm
 *.a
+EPR/epr
+EPR/epr.red
+EPR/epr.gre
+Code/sp2ppm
 textures/

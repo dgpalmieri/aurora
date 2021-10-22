@@ -83,7 +83,7 @@ The parameters are tuning of energy levels to color. There are examples of other
 
 ## Opening PPM
 
-There are serveral options for opening the `*.ppm` Inkscape or Infraview can be used.
+To open the `*.ppm` [Inkscape](https://inkscape.org/) or [Irfanview](https://www.irfanview.com/) can be used.
 
 ## Making a video
 
@@ -95,4 +95,4 @@ Install with `sudo apt install ffmpeg`
 To render a sequence into a video you can use the following command  
 `ffmpeg -pattern_type glob -s 1920x1920 -framerate 25 -i "*.ppm" output_vid.avi`
 
-This will grab all ppm files in the directory set framerate to 25 and the scale at 1920x1920. the output file will be `output_vid.avi`, feel free to mess around with these as you make different changes to renders.
+This will grab all ppm files in the directory, set framerate to 25 and the scale at 1920x1920. The output file will be `output_vid.avi`, feel free to mess around with these as you make different changes to renders.
