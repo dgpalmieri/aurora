@@ -61,22 +61,22 @@ const int INTEN_BIT = 15;
 /* a voxel (RGB,alpha,beta) is stored in 8 bytes */
 /* 4 Bytes: RRRRRRRR|RRGGGGGG|GGGGGGBB|BBBBBBBB  */
 /* 4 Bytes: aaaaaaaa|aaaaaaaa|bbbbbbbb|bbbbbbbb  */
-
 /* Dr. Genetti: 10 bits for red, 12 green, 10 blue, 12 for alpha beta. */
 /* Dr. Genetti: These are packed into 2 4 byte numbers. */
-/* Dr. Genetti: Wasn’t portable access to 8 byte unsigned ints on platforms at the time */
-/* Dr. Genetti: I don’t think this is used for aurora rendering */
+/* Dr. Genetti: Was not portable access to 8 byte unsigned ints on platforms at the time */
 
-const int uByte1 RED_MASK = 0xffc00000;
-const int uByte1 GREEN_MASK = 0x003ffc00;
-const int uByte1 BLUE_MASK = 0x000003ff;
+/* Dr. Genetti: I do not think the following values are used for aurora rendering */
+
+const uByte8 RED_MASK = 0xffc00000;
+const uByte8 GREEN_MASK = 0x003ffc00;
+const uByte8 BLUE_MASK = 0x000003ff;
 
 const int RED_SHIFT = 22;
 const int GREEN_SHIFT = 10;
 const int BLUE_SHIFT = 0;
 
-const uByte1 ALPHA_MASK = 0xffff0000;
-const uByte1 BETA_MASK = 0x0000ffff;
+const uByte8 ALPHA_MASK = 0xffff0000;
+const uByte8 BETA_MASK = 0x0000ffff;
 
 const int ALPHA_SHIFT = 16;
 const int BETA_SHIFT = 0;
