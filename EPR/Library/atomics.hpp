@@ -52,22 +52,33 @@ typedef unsigned long int uLong;
 
 /* set how many bits of resolution to store an intensity    */
 /* need to have room for 2 mults without overflow in uByte4 */
-#define INTEN_NUM 32768
-#define INTEN_BIT    15
+
+/* I wasn't sure if we wanted to change these to "C++ style" */
+/* so I did it and we can undo it if needed */
+const int INTEN_NUM = 32768;
+const int INTEN_BIT = 15;
 
 /* a voxel (RGB,alpha,beta) is stored in 8 bytes */
 /* 4 Bytes: RRRRRRRR|RRGGGGGG|GGGGGGBB|BBBBBBBB  */
 /* 4 Bytes: aaaaaaaa|aaaaaaaa|bbbbbbbb|bbbbbbbb  */
-#define RED_MASK    0xffc00000
-#define GREEN_MASK  0x003ffc00
-#define BLUE_MASK   0x000003ff
-#define RED_SHIFT           22
-#define GREEN_SHIFT         10
-#define BLUE_SHIFT           0
-#define ALPHA_MASK  0xffff0000
-#define BETA_MASK   0x0000ffff
-#define ALPHA_SHIFT         16
-#define BETA_SHIFT           0
+
+/* Dr. Genetti: 10 bits for red, 12 green, 10 blue, 12 for alpha beta. */
+/* Dr. Genetti: These are packed into 2 4 byte numbers. */
+/* Dr. Genetti: Wasn’t portable access to 8 byte unsigned ints on platforms at the time */
+/* Dr. Genetti: I don’t think this is used for aurora rendering */
+
+const int uByte1 RED_MASK = 0xffc00000;
+const int uByte1 GREEN_MASK = 0x003ffc00;
+const int uByte1 BLUE_MASK = 0x000003ff;
+
+const int RED_SHIFT = 22;
+const int GREEN_SHIFT = 10;
+const int BLUE_SHIFT = 0;
+
+const uByte1 ALPHA_MASK = 0xffff0000;
+const uByte1 BETA_MASK = 0x0000ffff;
+
+const int ALPHA_SHIFT = 16;
+const int BETA_SHIFT = 0;
 
 #endif
-
