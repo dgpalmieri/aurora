@@ -1,6 +1,6 @@
 #include <math.h>
 #include <stdexcept>
-#include<iostream>
+#include <iostream>
 #include <iomanip>
 
 #include "rays.hpp"
@@ -82,21 +82,23 @@ Vector operator+(Point P1, Point P2) {
 Vector operator*(double c, Point obj) {
     return obj *=c;
 }
+
 Vector operator*(Point obj, double c) {
-    return (obj *= c);
+    return obj *= c;
 }
 
-Vector negate(Vector V){
+Vector negate(Vector V) {
     return -V;
 }
-Vector add(Point P1, Point P2){
+Vector add(Point P1, Point P2) {
     return P1 + P2;
 }
 
-Vector subtract(Point P1, Point P2){
+Vector subtract(Point P1, Point P2) {
     return P1 - P2;
 }
-Vector multiply(double c, Point P){
+
+Vector multiply(double c, Point P) {
     return P * c;
 }
 
@@ -135,7 +137,6 @@ Vector create_vector(const Point & From, const Point & To){
 
 // ************************* Definition for Ray ***********************
 Ray::Ray(double x1, double y1, double z1, double x2, double y2, double z2) {
-
     double sc;
     double a = x2 - x1;
     double b = y2 - y1;
@@ -147,33 +148,33 @@ Ray::Ray(double x1, double y1, double z1, double x2, double y2, double z2) {
 }
 
 //******************* Alias Functions For Ray Definition: ***************
-Ray make_ray(double x1,double y1, double z1, double x2,double y2,double z2){
+Ray make_ray(double x1,double y1, double z1, double x2,double y2,double z2) {
     Ray r {x1, y1, z1, x2, y2, z2};
     return r;
 }
+// ************************ End of Definition for Ray **********************
 
-// ************************* Definition for Ray ***********************
+// ************************* Definition for MATRIX ***********************
 MATRIX::MATRIX(std::initializer_list<std::initializer_list<double>> init_list) {
-
     int counter = 0;
     for (auto row : init_list)
         std::copy(row.begin(), row.end(), m[counter++].begin());
 
 }
-auto MATRIX::operator[](int indx)const -> decltype(m[indx]){
+auto MATRIX::operator[](int indx)const -> decltype(m[indx]) {
     if (indx >3) throw std::out_of_range
     ("Index must not be greater than the length of MATRIX: 4x4");
 
     return m[indx];
 }
-auto MATRIX::operator[](int indx)-> decltype(m[indx]){
+auto MATRIX::operator[](int indx)-> decltype(m[indx]) {
     if (indx >3) throw std::out_of_range
                 ("Index must not be greater than the length of MATRIX: 4x4");
 
     return m[indx];
 }
 
-std::ostream &operator<<(std::ostream &os, const MATRIX & a){
+std::ostream &operator<<(std::ostream &os, const MATRIX & a) {
 
     os<< "Matrix is:\n";
     for ( int i=0 ; i<4 ; i++ ) {
@@ -192,7 +193,7 @@ void MATRIX::MatrixIdentity() {
     }
 }
 
-MATRIX MATRIX::adjoint()const {
+MATRIX MATRIX::adjoint() const {
     double a1, a2, a3, a4, b1, b2, b3, b4;
     double c1, c2, c3, c4, d1, d2, d3, d4;
     MATRIX out;
@@ -228,6 +229,7 @@ MATRIX MATRIX::adjoint()const {
 
     return out;
 }
+
 double MATRIX::det4x4() const {
     double ans;
     double a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4;
@@ -267,39 +269,40 @@ std::pair<MATRIX, int> MATRIX::inverse() const {
 
 
 //******************* Alias Functions For MATRIX Definition: ***************
-void MatrixPrint(const MATRIX & a){
+void MatrixPrint(const MATRIX & a) {
     std::cout<<a;
 }
 
-void MatrixIdentity(MATRIX &a){
+void MatrixIdentity(MATRIX &a) {
     a.MatrixIdentity();
 }
 
-void adjoint(const MATRIX & in, MATRIX &out){
+void adjoint(const MATRIX & in, MATRIX &out) {
     out = in.adjoint();
 }
-double det4x4(const MATRIX & m){
+double det4x4(const MATRIX & m) {
     return m.det4x4();
 }
 
-int inverse(const MATRIX & in,MATRIX &out){
+int inverse(const MATRIX & in,MATRIX &out) {
     auto inv = in.inverse();
     out = inv.first;
     return inv.second;
 }
+// ********************** End of Definition for MATRIX ******************
+
 //*********************** Definition for Utility Functions **************
-int fcmp(double a,double b)
-{
+int fcmp(double a,double b) {
     if (fabs(a - b) < TOL) return 1;
     return 0;
 }
 
-double det2x2( double a, double b, double c, double d){
+double det2x2( double a, double b, double c, double d) {
     return a * d - b * c;
 }
 
 double det3x3( double a1, double a2, double a3, double b1,
-               double b2, double b3, double c1, double c2, double c3 ){
+               double b2, double b3, double c1, double c2, double c3 ) {
 
     double ans;
 
@@ -309,7 +312,7 @@ double det3x3( double a1, double a2, double a3, double b1,
     return ans;
 }
 
-Vector vector_times_3x3of4x4(const Vector & x, const MATRIX & M){
+Vector vector_times_3x3of4x4(const Vector & x, const MATRIX & M) {
     Point a;
 
     a.x = x.x*M[0][0] + x.y*M[1][0] + x.z*M[2][0] + M[3][0];
@@ -318,7 +321,8 @@ Vector vector_times_3x3of4x4(const Vector & x, const MATRIX & M){
 
     return a;
 }
-Point point_times_4x4(const Point & x, const MATRIX & M){
+
+Point point_times_4x4(const Point & x, const MATRIX & M) {
     return vector_times_3x3of4x4(x,M);
 }
 

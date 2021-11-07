@@ -10,7 +10,7 @@ extern const double TOL;
 #include <array>
 #include <ostream>
 
-typedef struct Vector Point;
+typedef struct Vector Point; // assigning Point as an Alias of Vector
 struct Vector {
     double x=0,y=0,z=0;
 
@@ -35,7 +35,7 @@ struct Ray {
     Point dir;             /* direction (unitized) */
 };
 
-struct MATRIX{
+struct MATRIX {
     std::array<std::array<double,4>,4> m ={};
     MATRIX() = default;
     MATRIX(std::initializer_list<std::initializer_list<double>> init_list);
@@ -70,7 +70,7 @@ Vector operator+(Point P1, Point P2);
 [[maybe_unused]] double distance(const Point & a, const Point & b);
 [[maybe_unused]] double mag(const Point & P);
 Vector create_vector(const Point & From, const Point & To);
-// End Of Alias Functions For Vector
+
 
 // Alias Functions for Ray:
 // Provide more functionality and backward compatibility
