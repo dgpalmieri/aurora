@@ -102,31 +102,31 @@ Vector multiply(double c, Point P) {
     return P * c;
 }
 
-Vector normalize(Vector V){
+Vector normalize(Vector V) {
     return V.normalize();
 }
 
-Vector cross(const Vector & a, const Vector & b){
+Vector cross(const Vector & a, const Vector & b) {
     return a.cross(b);
 }
 
-double dot_product(const Vector & a, const Vector & b){
+double dot_product(const Vector & a, const Vector & b) {
     return (a.dot_product(b));
 }
 
-double dist2(const Point & a, const Point & b){
+double dist2(const Point & a, const Point & b) {
     return a.dist2(b);
 }
 
-double distance(const Point & a, const Point & b){
+double distance(const Point & a, const Point & b) {
     return a.distance(b);
 }
 
-double mag(const Point & P){
+double mag(const Point & P) {
     return P.mag();
 }
 
-Vector create_vector(const Point & From, const Point & To){
+Vector create_vector(const Point & From, const Point & To) {
     Vector v = To - From;
     double mag = 1.0 / v.mag();
     v *= mag;
