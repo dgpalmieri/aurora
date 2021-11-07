@@ -35,12 +35,12 @@ OCTREE *octree_insert(OCTREE *node, int nextLevel, Loc xLoc, Loc yLoc, Loc zLoc)
     int i;   
     int childLevel = nextLevel - 1;
     int testbit = 1 << childLevel;
-    int datachild = (xLoc & testbit) + ((yLoc & testbit)<<1) + ((zLoc & testbit)<<2) >> childLevel;   
+    int datachild = ((xLoc & testbit) + ((yLoc & testbit) << 1) + ((zLoc & testbit) << 2)) >> childLevel;   
     if (node->child == NULL && nextLevel != 0) {
-        if ((node->child = (OCTREE *) malloc(8*sizeof(OCTREE))) == NULL) { 
+        if ((node->child = (OCTREE *) malloc(8 * sizeof(OCTREE))) == NULL) { 
             double subblocksize = sizeof(short) * sub_num_samples;
-            double octree_size = (double)(((num_children+1)*sizeof(OCTREE))/1048576.0);
-            double subblocks_size = (double)(num_sub_allocated*subblocksize/1048576.0); 
+            double octree_size = (double)(((num_children + 1) * sizeof(OCTREE)) / 1048576.0);
+            double subblocks_size = (double)(num_sub_allocated * subblocksize / 1048576.0); 
             std::cerr << "ERROR: Can't malloc child: " << num_children << "at " << node->xLoc << node->yLoc << node->zLoc << ", level: " << node->depth << std::endl;
             std::cerr << "   Octree size: " << octree_size << " MB, Subblocks size: " << subblocks_size << " MB, Total: " << subblocks_size + octree_size << "MB" << std::endl;
             std::cerr << "deallocating octree and subblocks..." << std::endl;
@@ -94,12 +94,13 @@ OCTREE *octree_insert(OCTREE *node, int nextLevel, Loc xLoc, Loc yLoc, Loc zLoc)
             exit(1); 
         }
     }
+    return NULL;
 }
 
 OCTREE *octree_traverse(OCTREE *node, int nextLevel, Loc xLoc, Loc yLoc, Loc zLoc){
     int childLevel = nextLevel - 1;
     int testbit = 1 << childLevel;
-    int datachild = (xLoc & testbit) + ((yLoc & testbit)<<1) + ((zLoc & testbit)<<2) >> childLevel;
+    int datachild = ((xLoc & testbit) + ((yLoc & testbit) << 1) + ((zLoc & testbit)<< 2 )) >> childLevel;
     if (!node->child) { return &blanknode; } 
     if (node->child[datachild].xLoc == xLoc && node->child[datachild].yLoc == yLoc && node->child[datachild].zLoc == zLoc && node->child[datachild].depth == oct_depth) {
         return &node->child[datachild];
@@ -111,6 +112,7 @@ OCTREE *octree_traverse(OCTREE *node, int nextLevel, Loc xLoc, Loc yLoc, Loc zLo
             exit(1);  
         }
     }
+    return NULL;
 }
 
 void octree_destroy(OCTREE *o) {
