@@ -18,6 +18,7 @@ s.far  =  5.0;
 s.xres =  400;
 s.yres =  400;
 
+/* dgpalmieri makes the salient point that this should be done with doctest */
 std::cout << "Screen is a data structure of two integers and nine doubles." << std::endl;
 std::cout << "On this platform, an int is of size " << sizeof(int) << ", and a double is of size " << sizeof(double) << "." << std::endl;
 std::cout << "So the Screen data structure consumes " << 2 * sizeof(int) << " plus " << 9 * sizeof(double) \
