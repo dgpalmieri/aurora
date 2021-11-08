@@ -9,7 +9,7 @@ const double SMALL_NUMBER = 1.0e-8;
 const int NON_SINGULAR = 1;
 const int SINGULAR = 0;
 const double INF = 1.0e+38;
-const double TOL = 0.0001;
+const double TOLERANCE = 0.0001;
 
 // ************************* Definition for Vector ***********************
 Vector & Vector::operator-=(Point rhs) {
@@ -37,7 +37,7 @@ Vector Vector::operator-() {
     return (*this *= -1.0);
 }
 
-Vector& Vector::normalize(){
+Vector& Vector::normalize() {
     double sc = 1.0 / sqrt(x*x + y*y + z*z);
     return *this *=sc;
 }
@@ -111,7 +111,7 @@ Vector cross(const Vector & a, const Vector & b) {
 }
 
 double dot_product(const Vector & a, const Vector & b) {
-    return (a.dot_product(b));
+    return a.dot_product(b);
 }
 
 double dist2(const Point & a, const Point & b) {
@@ -161,12 +161,14 @@ MATRIX::MATRIX(std::initializer_list<std::initializer_list<double>> init_list) {
         std::copy(row.begin(), row.end(), m[counter++].begin());
 
 }
+
 auto MATRIX::operator[](int indx)const -> decltype(m[indx]) {
     if (indx >3) throw std::out_of_range
     ("Index must not be greater than the length of MATRIX: 4x4");
 
     return m[indx];
 }
+
 auto MATRIX::operator[](int indx)-> decltype(m[indx]) {
     if (indx >3) throw std::out_of_range
                 ("Index must not be greater than the length of MATRIX: 4x4");
@@ -175,7 +177,6 @@ auto MATRIX::operator[](int indx)-> decltype(m[indx]) {
 }
 
 std::ostream &operator<<(std::ostream &os, const MATRIX & a) {
-
     os<< "Matrix is:\n";
     for ( int i=0 ; i<4 ; i++ ) {
         for ( int j=0 ; j<4 ; j++ )
@@ -186,7 +187,6 @@ std::ostream &operator<<(std::ostream &os, const MATRIX & a) {
 }
 
 void MATRIX::MatrixIdentity() {
-
     for ( int i=0 ; i<4 ; i++ ) {
         for (int j = 0; j < 4; j++)
             m[i][j] = (double) (i == j);
@@ -293,7 +293,7 @@ int inverse(const MATRIX & in,MATRIX &out) {
 
 //*********************** Definition for Utility Functions **************
 int fcmp(double a,double b) {
-    if (fabs(a - b) < TOL) return 1;
+    if (fabs(a - b) < TOLERANCE) return 1;
     return 0;
 }
 

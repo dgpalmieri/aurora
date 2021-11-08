@@ -5,7 +5,7 @@ extern const double SMALL_NUMBER;
 extern const int NON_SINGULAR;
 extern const int SINGULAR;
 extern const double INF;
-extern const double TOL;
+extern const double TOLERANCE;
 
 #include <array>
 #include <ostream>
