@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-#include "timing.h"
+#include "../timing.h"
 #include <chrono>
 #include <thread>
 #include <fstream>
