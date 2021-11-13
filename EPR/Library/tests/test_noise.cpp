@@ -1,15 +1,17 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "noise.hpp"
-#include "doctest.h"
 
 #include <iostream>
+
+#include "noise.hpp"
+#include "doctest.h"
 
 // Function to scale double values to integer
 // used for comparison.
 int scale_double(double num){
     double scale = 0.0001;
-    return round((int)(num/scale) * scale * 10000);
+    return (int)round((int)(num/scale) * scale * 10000);
 }
+
 TEST_CASE("Testing noise: Simple test"){
     srand(10);
     initnoise();
