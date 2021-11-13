@@ -3,6 +3,9 @@ CFLAGS = -Wall -g
 
 test_rays: 
 	$(CC) $(CFLAGS) test_rays.cpp  doctest.h ../rays.cpp ../rays.hpp -o test_rays
+test_noise: 
+	$(CC) $(CFLAGS) test_noise.cpp  doctest.h ../noise.cpp ../noise.hpp -o test_noise
 
 clean:
 	rm -f test_rays
+	rm -f test_noise

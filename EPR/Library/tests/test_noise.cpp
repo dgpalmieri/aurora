@@ -2,8 +2,9 @@
 
 #include <iostream>
 
-#include "noise.hpp"
 #include "doctest.h"
+#include "../noise.hpp"
+
 
 // Function to scale double values to integer
 // used for comparison.
@@ -21,7 +22,7 @@ TEST_CASE("Testing noise: Simple test"){
     REQUIRE(v.x == 0);
     REQUIRE(v.y == 0);
     REQUIRE(v.z == 0);
-    REQUIRE( scale_double(n) == 4981);
+    REQUIRE(scale_double(n) == 5800);
 
     SUBCASE("Testing noise(...): Take a vector and return a noise value."){
         Vector v_1 = {10,5,9};
@@ -31,9 +32,9 @@ TEST_CASE("Testing noise: Simple test"){
         auto n_2 = noise(v_2);
         auto n_3 = noise(v_3);
 
-        CHECK(scale_double(n_1) == 7314);
-        CHECK(scale_double(n_2)  == 4427);
-        CHECK(scale_double(n_3)  == 5708);
+        CHECK(scale_double(n_1) == 5542);
+        CHECK(scale_double(n_2)  == 6241);
+        CHECK(scale_double(n_3)  == 4597);
     }
     SUBCASE("Testing Dnoise(...): Take a vector and return a vector with noise value."){
         Vector v_1 = {10,5,9};
@@ -44,17 +45,17 @@ TEST_CASE("Testing noise: Simple test"){
         auto dnv_2 = Dnoise(v_2);
         auto dnv_3 = Dnoise(v_3);
 
-        CHECK(scale_double(dnv_1.x) == -3842);
-        CHECK(scale_double(dnv_1.y) == -548);
-        CHECK(scale_double(dnv_1.z) == -676);
+        CHECK(scale_double(dnv_1.x) == -1798);
+        CHECK(scale_double(dnv_1.y) == 1720);
+        CHECK(scale_double(dnv_1.z) == -1616);
 
-        CHECK(scale_double(dnv_2.x) == -762);
-        CHECK(scale_double(dnv_2.y) == -558);
-        CHECK(scale_double(dnv_2.z) == -1207);
+        CHECK(scale_double(dnv_2.x) == 1062);
+        CHECK(scale_double(dnv_2.y) == -1306);
+        CHECK(scale_double(dnv_2.z) == 4596);
 
-        CHECK(scale_double(dnv_3.x) == 2646);
-        CHECK(scale_double(dnv_3.y) == 3134);
-        CHECK(scale_double(dnv_3.z) == -1629);
+        CHECK(scale_double(dnv_3.x) == 438);
+        CHECK(scale_double(dnv_3.y) == -1305);
+        CHECK(scale_double(dnv_3.z) == -4937);
     }
     SUBCASE("Testing turbulence(...): Take a four values and return a turbulence value."){
         double x_1 = 10.0, y_1 = 2.0, z_1 = 4.0, size_1 = 5.0;
@@ -65,8 +66,8 @@ TEST_CASE("Testing noise: Simple test"){
         auto t_2 = turbulence(x_2,y_2,z_2,size_2);
         auto t_3 = turbulence(x_3,y_3,z_3,size_3);
 
-        CHECK(scale_double(t_1) == 3834);
-        CHECK(scale_double(t_2) == 4473);
-        CHECK(scale_double(t_3) == 4280);
+        CHECK(scale_double(t_1) == 4795);
+        CHECK(scale_double(t_2) == 3727);
+        CHECK(scale_double(t_3) == 5146);
     }
 }
