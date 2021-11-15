@@ -57,7 +57,7 @@ TEST_CASE("Testing noise: Simple test"){
         CHECK(scale_double(dnv_3.y) == -1305);
         CHECK(scale_double(dnv_3.z) == -4937);
     }
-    SUBCASE("Testing turbulence(...): Take a four values and return a turbulence value."){
+    SUBCASE("Testing turbulence(...): Take four values and return a turbulence value."){
         double x_1 = 10.0, y_1 = 2.0, z_1 = 4.0, size_1 = 5.0;
         double x_2 = 5.0, y_2 = 6.0, z_2 = 14.0, size_2 = 2.0;
         double x_3 = 3.0, y_3 = 3.0, z_3 = 6.0, size_3 = 9.0;
