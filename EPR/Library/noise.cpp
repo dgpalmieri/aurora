@@ -1,13 +1,10 @@
 // File Name: Noise.cpp
 // Contain definitions for Noise in noise.hpp
 /*
-*	Noise and Dnoise routines
-*
-*       Originally From: dirks@oak.cis.ohio-state.edu (william r dirks)
-*	Many thanks to Jon Buller of Colorado State University for these
-*	routines.
-*
-*
+* Original C language Noise and Dnoise routines
+* from: dirks@oak.cis.ohio-state.edu (william r dirks)
+* Many thanks to Jon Buller of Colorado State University for these
+* routines.
 */
 
 #include <math.h>
@@ -261,8 +258,7 @@ double turbulence(double x, double y, double z, double size,
 
 // Empty definition.
 // This function is only here to prevent
-// undefined error in older oodes that call
+// undefined error in older code that calls
 // on it.
 void initnoise() {}
-/**************** End pf Alias Function Definition ******************/
-
+/**************** End of Alias Function Definition ******************/
