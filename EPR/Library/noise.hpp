@@ -5,7 +5,7 @@
 #ifndef _NOISE_HPP_
 #define _NOISE_HPP_
 
-#include<array>
+#include <array>
 
 #include "rays.hpp"
 
@@ -28,18 +28,17 @@ private:
 
 // Alias free functions:
 // provide backward compatibility
-[[deprecated("Used Noise object.noise() instead.")]]
+[[deprecated("Use Noise object.noise() member function instead.")]]
 [[maybe_unused]] double noise(const Vector & p, bool seeding = true, int seed = 10);
 
-[[deprecated("Used Noise object.Dnoise() instead.")]]
+[[deprecated("Use Noise object.Dnoise() member function instead.")]]
 [[maybe_unused]] Vector Dnoise(const Vector & p, bool seeding = true, int seed = 10);
 
-[[deprecated("Used Noise object.turbulence() instead.")]]
+[[deprecated("Use Noise object.turbulence() member function instead.")]]
 [[maybe_unused]] double turbulence(double x, double y, double z, double size,
                             bool seeding = true, int seed = 10);
 
-[[deprecated("initnoise() is an empty function that do nothing. "
-             "Declare a Noise object instead.")]]
+[[deprecated("Declare a Noise object instead of using initnoise(). It is an empty function that does nothing.")]]
 [[maybe_unused]] void initnoise();
 
 #endif //_NOISE_HPP_
