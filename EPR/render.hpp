@@ -34,7 +34,7 @@ const int MAX_CURTAINS = 9;
 /* change both (if needed) */
 const int NUM_LATS = 46;
 const int LOWER_LAT = 45;
-const int LOWER_LAT_RANGE = 45.0;
+const double LOWER_LAT_RANGE = 45.0;
 
 const int GREEN_CHANNEL = 0;
 const int MAGENTA_CHANNEL = 1;

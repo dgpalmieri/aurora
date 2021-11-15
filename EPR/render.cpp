@@ -12,12 +12,12 @@
 #include <string.h>
 #include "atomics.h"
 #include "raster.h" /* this includes atomics, so perhaps not needed above? */
-#include "render.h"
+#include "render.hpp"
 #include "err_msg.h"
-#include "rays.h"
+#include "rays.hpp"
 #include "view.h"
 #include "timing.h"
-#include "noise.h"
+#include "noise.hpp"
 #include "stack.h"          /* includes octree.h */
 
 /***** COMPUTATION OPTIONS *****/
@@ -57,6 +57,8 @@ static const double RAD2DEG = (180.0/M_PI);
 static const double EARTH_TILT_RAD = ((-23.4*M_PI)/180.0);
 /* Dr Genetti: "I don't like when I see this in anyone's code." */
 static const double FUDGE = 0.00001;
+
+/* The Hayden Planetarium had a horizon below 90 degrees. Is this declaration because of that? */
 static const double COS_97_3 = -0.127064608601;
 static const double COS_90 = 0.0;
 
@@ -114,6 +116,7 @@ static const double RedUpper = 6871.0;
 const int NUM_DEP_PTS = 81;
 const double ElevationMin = 6370.0;
 const double ElevationRange = 508.0;
+/* Where does the 80.0 come from in the comment below? */
 /* 80.0 / 508.0 */
 const double ELEV_2_U = 0.157480314961;
 
@@ -217,6 +220,7 @@ static double Vmin;
 static int RENDER_YMIN;
 static int RENDER_YMAX;
 static int Y_STOP;
+/* Is this properly a static, or should it be a const? */
 static int NUM_SLABS = 16;
 static double SlabYrange;
 
@@ -255,7 +259,8 @@ static double gBymin = INF;
 static double gBymax = -INF;
 static double gBzmin = INF;
 static double gBzmax = -INF;
-static uLong vox_count=0;
+/* when finding boundaries, not rendering any voxels */
+static uLong vox_count = 0;
 #endif
 
 #ifdef DO_MIP_MAP
@@ -268,6 +273,7 @@ TurbMap lower[MAX_CURTAINS];  /* lower res (than needed) texture map */
 /*---------------------------------------------------------------------------*/
 
 #ifdef DO_MIP_MAP
+// some helper functions could be factored out of here, perhaps?
 
 int get_turbulence_map(
 int    curtain_num,
@@ -476,6 +482,7 @@ double lon
 }
 
 
+// a Vector class could have an adjust_inclination() member function?
 #ifdef DO_INCLINATION
 Vector adjust_inclination(
 Vector in
@@ -493,9 +500,9 @@ Vector in
   double lo_frac, la_frac;
   double i00, i01, i10, i11, ix0, ix1, ixx;
   double tlo, tla;
-Vector NorthPole;
-double Ncostheta;
-Vector S;
+  Vector NorthPole;
+  double Ncostheta;
+  Vector S;
 
   /* determine the latitude/longitude of this point */
   Dist = in.x*in.x + in.z*in.z;
@@ -553,7 +560,9 @@ printf("Phi(%.2lf,%.2lf) ", lat, lon);
 printf("= %.2lf ", ixx);
 #endif
 
-/*phi = (lat - (90.0 - ixx)) * DEG2RAD;*/
+//since this was commented out, it was perhaps an earlier version
+//of the algorithm and should now be removed?
+/* phi = (lat - (90.0 - ixx)) * DEG2RAD; */
   phi = (90.0 - ixx) * DEG2RAD;
 
 #if 0
@@ -579,6 +588,7 @@ out = normalize(out);
          lat, lon, 90.0-ixx, lat - (90.0-ixx));
 #endif
 
+//why was this left in commented code?
 /*
   out.y = cos(phi);
   sphi = sin(phi);
@@ -1952,6 +1962,7 @@ int   color_band
 
 
 #ifdef NOISE_TO_ELEVATION
+  /* OK, this function is deprecated, so we need to create a noise object here */
   initnoise();
 #endif
   total_vol = 0.0;
