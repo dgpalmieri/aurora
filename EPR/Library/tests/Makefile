@@ -17,5 +17,4 @@ test_stack: $(LIB)/stack.hpp test_stack.cpp
 #	$(CC) $(CFLAGS) -I$(LIB) -c render.c
 
 clean:
-	find . -maxdepth 1 -name "test_*" -not -name "*\.cpp"
-	find . -maxdepth 1 -name "test_*" -not -name "*\.cpp" -delete
+	find . -maxdepth 1 -name "test_*" -not -name "*\.cpp" -print -delete
