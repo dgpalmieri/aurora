@@ -1,7 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "doctest.h"
-#include "../rays.hpp"
+#include "rays.hpp"
 
 #include<iostream>
 using std::ostream;
