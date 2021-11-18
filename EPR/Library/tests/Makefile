@@ -26,4 +26,4 @@ test_noise:
 #	$(CC) $(CFLAGS) -I$(LIB) -c render.c
 
 clean:
-	rm -f test_atomics test_rays test_noise
+	rm -f test_atomics test_rays test_noise test
