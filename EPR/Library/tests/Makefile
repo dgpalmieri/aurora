@@ -1,12 +1,14 @@
 # Intel x64 version
 # this is the EPR/Library/tests Makefile
-
 #https://stackoverflow.com/a/28236905
 #https://gcc.gnu.org/onlinedocs/gcc/Invoking-G_002b_002b.html
-#if you want debugging information, add -g to this next line
+#for debugging information, add -g to this next line or in a recipe, below
 CC = g++ -std=c++17 -Wall -Wextra -Werror -O2 -DSGI32
 LIB = ../../Library
 INCQ = -iquote ../
+
+libtest:
+	$(CC) -g $(INCQ) libtest.cpp ../err_msg.cpp ../octree.cpp -o test
 
 test_atomics: $(LIB)/atomics.hpp test_atomics.cpp
 	$(CC) $(INCQ) -L$(LIB) \
@@ -17,7 +19,7 @@ test_rays:
 	test_rays.cpp ../rays.cpp -o test_rays -lm
 
 test_noise: 
-	$(CC) $(INCQ) -L$(LIB) \
+	$(CC) -g $(INCQ) -L$(LIB) \
    	test_noise.cpp ../noise.cpp -o test_noise -lm
 
 #render.o: $(LIB)/atomics.h render.h render.c
