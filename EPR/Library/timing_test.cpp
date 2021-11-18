@@ -7,7 +7,7 @@
 #include <cstdio>
 
 /*******************************************************
- *                 Auxillary functions                 *
+ *                 Auxiliary functions                 *
  *******************************************************/
 void sleep(int sleepTime) { //time in milliseconds
     auto start_tick = clock();
