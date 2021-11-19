@@ -83,6 +83,26 @@ TEST_CASE("Stack Tests"){
     REQUIRE(stackTop->max.y == elemThreeMax.y);
     REQUIRE(stackTop->max.z == elemThreeMax.z);
 
+    stackData * poppedData = new stackData;
+    stackpop(my_stack, poppedData);
+    stackTop = my_stack->top;
+
+    REQUIRE(poppedData->octptr == octreeThree);
+    REQUIRE(poppedData->min.x == elemThreeMin.x);
+    REQUIRE(poppedData->min.y == elemThreeMin.y);
+    REQUIRE(poppedData->min.z == elemThreeMin.z);
+    REQUIRE(poppedData->max.x == elemThreeMax.x);
+    REQUIRE(poppedData->max.y == elemThreeMax.y);
+    REQUIRE(poppedData->max.z == elemThreeMax.z);
+    REQUIRE(stackTop->octptr == octreeTwo);
+    REQUIRE(stackTop->min.x == elemTwoMin.x);
+    REQUIRE(stackTop->min.y == elemTwoMin.y);
+    REQUIRE(stackTop->min.z == elemTwoMin.z);
+    REQUIRE(stackTop->max.x == elemTwoMax.x);
+    REQUIRE(stackTop->max.y == elemTwoMax.y);
+    REQUIRE(stackTop->max.z == elemTwoMax.z);
+
     stackdestroy(my_stack);
     delete(my_stack);
+    delete(poppedData);
 }
