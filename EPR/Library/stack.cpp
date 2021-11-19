@@ -3,7 +3,7 @@
  ** This keeps track of an origin point and direction vector (see stack.h)
  **/
 
-#include "stack.h"
+#include "stack.hpp"
 
 void stackinit(stackTop *theStack) {
    theStack->top = NULL; 
