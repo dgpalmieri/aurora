@@ -5,11 +5,14 @@
 #include "octree.h"
 #include <iostream>
 #include <memory>
+#include <vector>
 
 using stackElement = Point;
 
 class stackData {
     public:
+        stackData(const std::vector<double> &, const std::vector<double> &, std::shared_ptr<OCTREE>);
+
         stackElement min;
         stackElement max;
         std::shared_ptr<OCTREE> octptr;
@@ -20,7 +23,7 @@ class stackNode {
         stackElement min;
         stackElement max;
         std::shared_ptr<OCTREE> octptr;
-        std::unique_ptr<stackNode> next;
+        std::shared_ptr<stackNode> next;
 };
 
 class stack{
@@ -31,7 +34,7 @@ class stack{
 
         void push(std::shared_ptr<OCTREE>, const stackElement &, const stackElement &);
 
-        stackData pop();
+        int pop(stackData &);
 
     private:
         int size;
