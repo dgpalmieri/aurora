@@ -7,7 +7,7 @@
 
 #define _VIEW_H
 
-#include "rays.h"
+#include "rays.hpp"
 
 void  set_view_matrix(double *);
 void  output_camera(void);
