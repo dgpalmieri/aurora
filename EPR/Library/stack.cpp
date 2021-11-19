@@ -50,6 +50,6 @@ int stack::pop(stackData & s) {
      return 1;
 }
 
-std::shared_ptr<stackNode> stack::top(){
-    return this->_top;
-}
+std::shared_ptr<stackNode> stack::top(){ return this->_top; }
+
+int stack::getSize() { return this->size; }

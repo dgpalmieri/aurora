@@ -11,6 +11,7 @@ using stackElement = Point;
 
 class stackData {
     public:
+        stackData() : min({.x = 0, .y = 0, .z = 0}), max({.x = 0, .y = 0, .z = 0}), octptr(nullptr) {}
         stackData(const std::vector<double> &, const std::vector<double> &, std::shared_ptr<OCTREE>);
 
         stackElement min;
@@ -35,6 +36,8 @@ class stack{
         void push(std::shared_ptr<OCTREE>, const stackElement &, const stackElement &);
 
         int pop(stackData &);
+
+        int getSize();
 
     private:
         int size;
