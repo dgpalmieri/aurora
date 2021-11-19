@@ -50,6 +50,8 @@ TEST_CASE("Stack Tests"){
     elemThreeMax = (stackElement){.x = 2.5, .y = 2.5, .z = 2.5};
     octree_init(octreeThree, 0);
 
+    // Tests for stackpush
+
     stackpush(my_stack, octreeOne, elemOneMin, elemOneMax);
 
     stackNode * stackTop = my_stack->top;
@@ -83,6 +85,8 @@ TEST_CASE("Stack Tests"){
     REQUIRE(stackTop->max.y == elemThreeMax.y);
     REQUIRE(stackTop->max.z == elemThreeMax.z);
 
+    // Tests for stackpop
+
     stackData * poppedData = new stackData;
     stackpop(my_stack, poppedData);
     stackTop = my_stack->top;
@@ -101,6 +105,36 @@ TEST_CASE("Stack Tests"){
     REQUIRE(stackTop->max.x == elemTwoMax.x);
     REQUIRE(stackTop->max.y == elemTwoMax.y);
     REQUIRE(stackTop->max.z == elemTwoMax.z);
+
+    stackpop(my_stack, poppedData);
+    stackTop = my_stack->top;
+
+    REQUIRE(poppedData->octptr == octreeTwo);
+    REQUIRE(poppedData->min.x == elemTwoMin.x);
+    REQUIRE(poppedData->min.y == elemTwoMin.y);
+    REQUIRE(poppedData->min.z == elemTwoMin.z);
+    REQUIRE(poppedData->max.x == elemTwoMax.x);
+    REQUIRE(poppedData->max.y == elemTwoMax.y);
+    REQUIRE(poppedData->max.z == elemTwoMax.z);
+    REQUIRE(stackTop->octptr == octreeOne);
+    REQUIRE(stackTop->min.x == elemOneMin.x);
+    REQUIRE(stackTop->min.y == elemOneMin.y);
+    REQUIRE(stackTop->min.z == elemOneMin.z);
+    REQUIRE(stackTop->max.x == elemOneMax.x);
+    REQUIRE(stackTop->max.y == elemOneMax.y);
+    REQUIRE(stackTop->max.z == elemOneMax.z);
+
+    stackpop(my_stack, poppedData);
+    stackTop = my_stack->top;
+
+    REQUIRE(poppedData->octptr == octreeOne);
+    REQUIRE(poppedData->min.x == elemOneMin.x);
+    REQUIRE(poppedData->min.y == elemOneMin.y);
+    REQUIRE(poppedData->min.z == elemOneMin.z);
+    REQUIRE(poppedData->max.x == elemOneMax.x);
+    REQUIRE(poppedData->max.y == elemOneMax.y);
+    REQUIRE(poppedData->max.z == elemOneMax.z);
+    REQUIRE(stackTop == nullptr);
 
     stackdestroy(my_stack);
     delete(my_stack);
