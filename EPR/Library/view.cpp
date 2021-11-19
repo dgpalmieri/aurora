@@ -5,13 +5,13 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "view.h"
+#include "view.hpp"
 
 /* transformation to eye ray */
-MATRIX xform={1.,0.,0.,0.,0.,1.,0.,0.,0.,0.,1.,0.,0.,0.,0.,1.};
+MATRIX xform = {{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
 
 /* inverse of transform to eye ray  */
-MATRIX invrse={1.,0.,0.,0.,0.,1.,0.,0.,0.,0.,1.,0.,0.,0.,0.,1.};
+MATRIX invrse = {{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
 
 /*-------------------------------------------------------------------*/
 
