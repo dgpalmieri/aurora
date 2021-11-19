@@ -1,8 +1,0 @@
-CC  = g++ -std=c++17
-CFLAGS = -Wall -g
-
-test_rays: 
-	$(CC) $(CFLAGS) test_rays.cpp  doctest.h ../rays.cpp ../rays.hpp -o test_rays
-
-clean:
-	rm -f test_rays
