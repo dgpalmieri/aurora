@@ -3,7 +3,6 @@
 
 #include "doctest.h"
 #include <limits>
-#include <climits>
 #include "atomics.hpp"
 
 TEST_CASE("Testing atomics.hpp: Types") {
