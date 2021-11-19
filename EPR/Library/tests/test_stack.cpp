@@ -29,38 +29,41 @@ unsigned int        num_sub_allocated = 0;
 
 
 TEST_CASE("Stack Tests"){
-    OCTREE * octreeOne = new OCTREE;
+    OCTREE * octreeOne_raw = new OCTREE;
     stackElement elemOneMin, elemOneMax;
     elemOneMin = (stackElement){.x = 0.0, .y = 0.0, .z = 0.0};
     elemOneMax = (stackElement){.x = 0.5, .y = 0.5, .z = 0.5};
-    octree_init(octreeOne, 0);
+    octree_init(octreeOne_raw, 0);
 
-    OCTREE * octreeTwo = new OCTREE;
+    OCTREE * octreeTwo_raw = new OCTREE;
     stackElement elemTwoMin, elemTwoMax;
     elemTwoMin = (stackElement){.x = 1.0, .y = 1.0, .z = 1.0};
     elemTwoMax = (stackElement){.x = 1.5, .y = 1.5, .z = 1.5};
-    octree_init(octreeTwo, 0);
+    octree_init(octreeTwo_raw, 0);
 
-    OCTREE * octreeThree = new OCTREE;
+    OCTREE * octreeThree_raw = new OCTREE;
     stackElement elemThreeMin, elemThreeMax;
     elemThreeMin = (stackElement){.x = 2.0, .y = 2.0, .z = 2.0};
     elemThreeMax = (stackElement){.x = 2.5, .y = 2.5, .z = 2.5};
-    octree_init(octreeThree, 0);
+    octree_init(octreeThree_raw, 0);
 
-    stackTop * my_stack = new stackTop;
+    stack my_stack;
+    std::shared_ptr<OCTREE> octreeOne(octreeOne_raw);
+    std::shared_ptr<OCTREE> octreeTwo(octreeTwo_raw);
+    std::shared_ptr<OCTREE> octreeThree(octreeThree_raw);
 
     // Tests for stackinit
 
-    stackinit(my_stack);
+    //stackinit(my_stack);
 
-    REQUIRE(my_stack->size == 0);
-    REQUIRE(my_stack->top == nullptr);
+    REQUIRE(my_stack.getSize() == 0);
+    REQUIRE(my_stack.top() == nullptr);
 
     // Tests for stackpush
 
-    stackpush(my_stack, octreeOne, elemOneMin, elemOneMax);
+    my_stack.push(octreeOne, elemOneMin, elemOneMax);
 
-    stackNode * stackTop = my_stack->top;
+    std::shared_ptr<stackNode> stackTop = my_stack.top();
     REQUIRE(stackTop->octptr == octreeOne);
     REQUIRE(stackTop->min.x == elemOneMin.x);
     REQUIRE(stackTop->min.y == elemOneMin.y);
@@ -69,9 +72,9 @@ TEST_CASE("Stack Tests"){
     REQUIRE(stackTop->max.y == elemOneMax.y);
     REQUIRE(stackTop->max.z == elemOneMax.z);
 
-    stackpush(my_stack, octreeTwo, elemTwoMin, elemTwoMax);
+    my_stack.push(octreeTwo, elemTwoMin, elemTwoMax);
 
-    stackTop = my_stack->top;
+    stackTop = my_stack.top();
     REQUIRE(stackTop->octptr == octreeTwo);
     REQUIRE(stackTop->min.x == elemTwoMin.x);
     REQUIRE(stackTop->min.y == elemTwoMin.y);
@@ -80,9 +83,9 @@ TEST_CASE("Stack Tests"){
     REQUIRE(stackTop->max.y == elemTwoMax.y);
     REQUIRE(stackTop->max.z == elemTwoMax.z);
 
-    stackpush(my_stack, octreeThree, elemThreeMin, elemThreeMax);
+    my_stack.push(octreeThree, elemThreeMin, elemThreeMax);
 
-    stackTop = my_stack->top;
+    stackTop = my_stack.top();
     REQUIRE(stackTop->octptr == octreeThree);
     REQUIRE(stackTop->min.x == elemThreeMin.x);
     REQUIRE(stackTop->min.y == elemThreeMin.y);
@@ -93,17 +96,17 @@ TEST_CASE("Stack Tests"){
 
     // Tests for stackpop
 
-    stackData * poppedData = new stackData;
-    stackpop(my_stack, poppedData);
-    stackTop = my_stack->top;
+    stackData poppedData;
+    my_stack.pop(poppedData);
+    stackTop = my_stack.top();
 
-    REQUIRE(poppedData->octptr == octreeThree);
-    REQUIRE(poppedData->min.x == elemThreeMin.x);
-    REQUIRE(poppedData->min.y == elemThreeMin.y);
-    REQUIRE(poppedData->min.z == elemThreeMin.z);
-    REQUIRE(poppedData->max.x == elemThreeMax.x);
-    REQUIRE(poppedData->max.y == elemThreeMax.y);
-    REQUIRE(poppedData->max.z == elemThreeMax.z);
+    REQUIRE(poppedData.octptr == octreeThree);
+    REQUIRE(poppedData.min.x == elemThreeMin.x);
+    REQUIRE(poppedData.min.y == elemThreeMin.y);
+    REQUIRE(poppedData.min.z == elemThreeMin.z);
+    REQUIRE(poppedData.max.x == elemThreeMax.x);
+    REQUIRE(poppedData.max.y == elemThreeMax.y);
+    REQUIRE(poppedData.max.z == elemThreeMax.z);
     REQUIRE(stackTop->octptr == octreeTwo);
     REQUIRE(stackTop->min.x == elemTwoMin.x);
     REQUIRE(stackTop->min.y == elemTwoMin.y);
@@ -112,16 +115,16 @@ TEST_CASE("Stack Tests"){
     REQUIRE(stackTop->max.y == elemTwoMax.y);
     REQUIRE(stackTop->max.z == elemTwoMax.z);
 
-    stackpop(my_stack, poppedData);
-    stackTop = my_stack->top;
+    my_stack.pop(poppedData);
+    stackTop = my_stack.top();
 
-    REQUIRE(poppedData->octptr == octreeTwo);
-    REQUIRE(poppedData->min.x == elemTwoMin.x);
-    REQUIRE(poppedData->min.y == elemTwoMin.y);
-    REQUIRE(poppedData->min.z == elemTwoMin.z);
-    REQUIRE(poppedData->max.x == elemTwoMax.x);
-    REQUIRE(poppedData->max.y == elemTwoMax.y);
-    REQUIRE(poppedData->max.z == elemTwoMax.z);
+    REQUIRE(poppedData.octptr == octreeTwo);
+    REQUIRE(poppedData.min.x == elemTwoMin.x);
+    REQUIRE(poppedData.min.y == elemTwoMin.y);
+    REQUIRE(poppedData.min.z == elemTwoMin.z);
+    REQUIRE(poppedData.max.x == elemTwoMax.x);
+    REQUIRE(poppedData.max.y == elemTwoMax.y);
+    REQUIRE(poppedData.max.z == elemTwoMax.z);
     REQUIRE(stackTop->octptr == octreeOne);
     REQUIRE(stackTop->min.x == elemOneMin.x);
     REQUIRE(stackTop->min.y == elemOneMin.y);
@@ -130,27 +133,15 @@ TEST_CASE("Stack Tests"){
     REQUIRE(stackTop->max.y == elemOneMax.y);
     REQUIRE(stackTop->max.z == elemOneMax.z);
 
-    stackpop(my_stack, poppedData);
-    stackTop = my_stack->top;
+    my_stack.pop(poppedData);
+    stackTop = my_stack.top();
 
-    REQUIRE(poppedData->octptr == octreeOne);
-    REQUIRE(poppedData->min.x == elemOneMin.x);
-    REQUIRE(poppedData->min.y == elemOneMin.y);
-    REQUIRE(poppedData->min.z == elemOneMin.z);
-    REQUIRE(poppedData->max.x == elemOneMax.x);
-    REQUIRE(poppedData->max.y == elemOneMax.y);
-    REQUIRE(poppedData->max.z == elemOneMax.z);
+    REQUIRE(poppedData.octptr == octreeOne);
+    REQUIRE(poppedData.min.x == elemOneMin.x);
+    REQUIRE(poppedData.min.y == elemOneMin.y);
+    REQUIRE(poppedData.min.z == elemOneMin.z);
+    REQUIRE(poppedData.max.x == elemOneMax.x);
+    REQUIRE(poppedData.max.y == elemOneMax.y);
+    REQUIRE(poppedData.max.z == elemOneMax.z);
     REQUIRE(stackTop == nullptr);
-
-    // Tests for stackdestroy
-    // This is going to be left empty because it's impossible to safely check
-    // if a pointer has been freed, and also because I'm going to change the
-    // implementation and make this a non-issue
-
-    stackdestroy(my_stack);
-
-    // Clean up pointers (icky!)
-
-    delete(my_stack);
-    delete(poppedData);
 }
