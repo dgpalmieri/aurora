@@ -29,9 +29,6 @@ unsigned int        num_sub_allocated = 0;
 
 
 TEST_CASE("Stack Tests"){
-    stackTop * my_stack = new stackTop;
-    stackinit(my_stack);
-
     OCTREE * octreeOne = new OCTREE;
     stackElement elemOneMin, elemOneMax;
     elemOneMin = (stackElement){.x = 0.0, .y = 0.0, .z = 0.0};
@@ -49,6 +46,15 @@ TEST_CASE("Stack Tests"){
     elemThreeMin = (stackElement){.x = 2.0, .y = 2.0, .z = 2.0};
     elemThreeMax = (stackElement){.x = 2.5, .y = 2.5, .z = 2.5};
     octree_init(octreeThree, 0);
+
+    stackTop * my_stack = new stackTop;
+
+    // Tests for stackinit
+
+    stackinit(my_stack);
+
+    REQUIRE(my_stack->size == 0);
+    REQUIRE(my_stack->top == nullptr);
 
     // Tests for stackpush
 
@@ -136,7 +142,15 @@ TEST_CASE("Stack Tests"){
     REQUIRE(poppedData->max.z == elemOneMax.z);
     REQUIRE(stackTop == nullptr);
 
+    // Tests for stackdestroy
+    // This is going to be left empty because it's impossible to safely check
+    // if a pointer has been freed, and also because I'm going to change the
+    // implementation and make this a non-issue
+
     stackdestroy(my_stack);
+
+    // Clean up pointers (icky!)
+
     delete(my_stack);
     delete(poppedData);
 }
