@@ -1,9 +1,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-//TODO: test functions
+
 #include "doctest.h"
 #include "raster.hpp"
 
-TEST_CASE("Testing raster.hpp") {
+TEST_CASE("Testing screen struct from raster.hpp") {
 
 //holds raster/window information
     Screen s;
@@ -35,6 +35,28 @@ TEST_CASE("Testing raster.hpp") {
         CHECK(sizeof(double) == 8);
         CHECK(sizeof(s) == (2*4)+(6*8));
         CHECK((2*sizeof(int) + 6*sizeof(double)) == sizeof(s));
+
+    }
+
+}
+
+TEST_CASE("Testing pixel struct from raster.hpp") {
+    //holds the values for a pixel at highest accuracy
+    Pixel p;
+
+    p.r = 33.33;
+    p.g = 33.33;
+    p.b = 33.33;
+    p.a = 33.33;
+
+    REQUIRE(p.r == 33.33);
+    REQUIRE(p.g == 33.33);
+    REQUIRE(p.b == 33.33);
+    REQUIRE(p.a == 33.33);
+
+    SUBCASE("Pixel is a data structure of four doubles.") {
+
+        CHECK(sizeof(p) == (4*8));
 
     }
 
