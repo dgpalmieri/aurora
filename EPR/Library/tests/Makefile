@@ -31,4 +31,4 @@ test_view:
 	$(LIB)/rays.cpp $(LIB)/view.cpp test_view.cpp  -o test_view -lm
 
 clean:
-	rm -f test_atomics test_rays test_noise test test_raster
+	find . -maxdepth 1 -name "test_*" -not -name "*\.cpp" -print -delete
