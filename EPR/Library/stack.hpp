@@ -1,3 +1,6 @@
+#ifndef STACK_HPP
+#define STACK_HPP
+
 #include "rays.h"
 #include "octree.h"
 #include <iostream>
@@ -34,3 +37,5 @@ class stack{
         int size;
         std::shared_ptr<stackNode> _top;
 };
+
+#endif // STACK_HPP
