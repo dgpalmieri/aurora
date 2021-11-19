@@ -20,10 +20,11 @@ test_rays:
 
 test_noise: 
 	$(CC) -g $(INCQ) -L$(LIB) \
-   	test_noise.cpp ../noise.cpp -o test_noise -lm
+	test_noise.cpp ../noise.cpp -o test_noise -lm
 
-#render.o: $(LIB)/atomics.h render.h render.c
-#	$(CC) $(CFLAGS) -I$(LIB) -c render.c
+test_raster:
+	$(CC) $(INCQ) -L$(LIB) \
+	test_raster.cpp ../raster.cpp -o test_raster -lm
 
 clean:
-	rm -f test_atomics test_rays test_noise test
+	rm -f test_atomics test_rays test_noise test test_raster
