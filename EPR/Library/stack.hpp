@@ -1,29 +1,36 @@
 #include "rays.h"
 #include "octree.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <memory>
 
-typedef Point stackElement;
+using stackElement = Point;
 
-typedef struct _stackNode {
-   stackElement min;
-   stackElement max;
-   OCTREE *octptr;
-   struct _stackNode *next;
-} stackNode;
+class stackData {
+    public:
+        stackElement min;
+        stackElement max;
+        std::shared_ptr<OCTREE> octptr;
+};
 
-typedef struct {
-   int size;
-   stackNode *top;
-} stackTop;
+class stackNode {
+    public:
+        stackElement min;
+        stackElement max;
+        std::shared_ptr<OCTREE> octptr;
+        std::unique_ptr<stackNode> next;
+};
 
-typedef struct {
-   stackElement min;
-   stackElement max;
-   OCTREE *octptr;
-} stackData;
+class stack{
+    public:
+        stack() : size(0), _top(nullptr) {}
 
-void stackpush(stackTop *theStack, OCTREE *o, stackElement min, stackElement max);
-int  stackpop (stackTop *theStack, stackData *topData);
-void stackinit(stackTop *theStack);
-void stackdestroy(stackTop *theStack);
+        std::shared_ptr<stackNode> top();
+
+        void push(std::shared_ptr<OCTREE>, const stackElement &, const stackElement &);
+
+        stackData pop();
+
+    private:
+        int size;
+        std::shared_ptr<stackNode> _top;
+};
