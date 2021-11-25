@@ -75,7 +75,7 @@ TEST_CASE("View Tests"){
         REQUIRE(vecRetPoint2.z == 42.0);
     }
 
-    SUBCASE("vec_inv_camera_xform"){
+    SUBCASE("vecInvCameraTransform tests"){
         Point vecTestPoint = {1, 1, 1};
         Point vecRetPoint = vecInvCameraTransform(vecTestPoint);
 
@@ -91,7 +91,7 @@ TEST_CASE("View Tests"){
         REQUIRE(vecRetPoint2.z == 2.0);
     }
 
-    SUBCASE("camera_lookup tests"){
+    SUBCASE("cameraLookup tests"){
         REQUIRE(cameraLookup(0,0) == 1.0);
         REQUIRE(cameraLookup(0,1) == 2.0);
         REQUIRE(cameraLookup(0,2) == 3.0);
