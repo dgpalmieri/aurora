@@ -1,4 +1,4 @@
-/*      File: view.c                                                       */
+/*       File: view.c       */
 
 
 /* set_polar_view ... */
@@ -15,10 +15,7 @@ MATRIX invrse = {{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
 
 /*-------------------------------------------------------------------*/
 
-void set_view_matrix(
-double *avs_camera
-)
-{
+void set_view_matrix( double *avs_camera ) {
   int i,j;
 
   /* copy the view matrix over, note that the viewpoint */
@@ -38,9 +35,7 @@ double *avs_camera
 
 /*-------------------------------------------------------------------*/
 
-void output_camera(
-)
-{
+void output_camera() {
   fprintf(stderr, "Camera transformation ");
   MatrixPrint(xform);
   fprintf(stderr, "Inverse Camera transformation ");
@@ -49,10 +44,7 @@ void output_camera(
 
 /*-------------------------------------------------------------------*/
 
-Point camera_xform(
-Point p
-)
-{
+Point camera_xform( Point p ) {
   Point a;
 
   /* pre-multiply the matrix (PxM) */
@@ -65,10 +57,7 @@ Point p
 
 /*-------------------------------------------------------------------*/
 
-Point inv_camera_xform(
-Point p
-)
-{
+Point inv_camera_xform( Point p ) {
   Point a;
 
   /* pre-multiply the inverse camera matrix (PxM-1) */
@@ -81,10 +70,7 @@ Point p
 
 /*-------------------------------------------------------------------*/
 
-Vector vec_camera_xform(
-Vector p
-)
-{
+Vector vec_camera_xform( Vector p ) {
   Vector a;
 
   /* pre-multiply the inverse camera matrix (PxM) */
@@ -97,10 +83,7 @@ Vector p
 
 /*-------------------------------------------------------------------*/
 
-Vector vec_inv_camera_xform(
-Vector p
-)
-{
+Vector vec_inv_camera_xform( Vector p ) {
   Vector a;
 
   /* pre-multiply the inverse camera matrix (PxM-1) */
@@ -113,11 +96,7 @@ Vector p
 
 /*-------------------------------------------------------------------*/
 
-double camera_lookup(
-int i,
-int j
-)
-{
+double camera_lookup( int i, int j ) {
   return xform[i][j];
 }
 
