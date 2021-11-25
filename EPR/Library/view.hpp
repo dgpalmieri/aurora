@@ -1,10 +1,9 @@
-/*      File: view.h                                                       */
+// view.hpp
+// Refactored to C++17 by Dylan Palmieri @dgpalmieri
+// Functions that set the viewing/raster attributes
 
-
-/* Functions that set the viewing/raster attributes */
-
-#ifndef _VIEW_H
-#define _VIEW_H
+#ifndef VIEW_H
+#define VIEW_H
 
 #include <vector>
 #include "rays.hpp"
@@ -23,4 +22,4 @@ Vector vecInvCameraTransform(const Vector &);
 
 double cameraLookup(const int &, const int &);
 
-#endif // _VIEW_H
+#endif // VIEW_H
