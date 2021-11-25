@@ -4,17 +4,23 @@
 /* Functions that set the viewing/raster attributes */
 
 #ifndef _VIEW_H
-
 #define _VIEW_H
 
+#include <vector>
 #include "rays.hpp"
 
-void  set_view_matrix(double *);
-void  output_camera(void);
-Point camera_xform(Point);
-Point inv_camera_xform(Point);
-Vector vec_camera_xform(Vector);
-Vector vec_inv_camera_xform(Vector);
-double camera_lookup(int,int);
+void setViewMatrix(const std::vector<double> &);
 
-#endif
+void outputCamera();
+
+Point cameraXform(const Point &);
+
+Point invCameraXform(const Point &);
+
+Vector vecCameraXform(const Vector &);
+
+Vector vecInvCameraXform(const Vector &);
+
+double cameraLookup(const int &, const int &);
+
+#endif // _VIEW_H
