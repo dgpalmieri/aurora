@@ -1,7 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "../view.hpp"
-//#include "view.hpp"
+#include "view.hpp"
 #include "doctest.h"
 
 #include <iostream>
