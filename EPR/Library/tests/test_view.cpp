@@ -1,3 +1,6 @@
+// test_view.cpp
+// Author: Dylan Palmieri @dgpalmieri
+
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "view.hpp"
@@ -14,15 +17,15 @@ TEST_CASE("View Tests"){
                                    10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0};
 
     setViewMatrix(testMatrix);
-    // Is there a way to access the xform and invrse matricies in the view file?
+    // Is there a way to access the viewMatrix and inverseViewMatrix variables in the view file?
     // Ideally, this would be some kind of read-only global variable
 
-    // Now the xform matrix is a 4x4 matrix, and the inverse matrix is
+    // Now the view matrix is a 4x4 matrix, and the inverse matrix is
     // still the identity matrix
 
-    // camera_xform tests
-    // Because this function is composed entirely of two prints two MatrixPrints (which
-    // are tested in test_rays.cpp), testing this function seems repeetitive and non-DRY
+    // outputCamera tests
+    // Because this function is composed entirely of two prints and two MatrixPrints (which
+    // are tested in test_rays.cpp), testing this function seems repetitive and non-DRY
 
     SUBCASE("cameraTransform tests"){
         Point testPoint = {1, 1, 1};
