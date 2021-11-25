@@ -1,104 +1,80 @@
-/*       File: view.c       */
+// view.cpp
+// Refactored to C++ by Dylan Palmieri (@dgpalmieri)
 
-
-/* set_polar_view ... */
-
-#include <stdio.h>
-#include <math.h>
+#include <iostream>
+#include <cmath>
 #include "view.hpp"
 
-/* transformation to eye ray */
-MATRIX xform = {{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
+// transformation to eye ray
+MATRIX viewMatrix = {{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
 
-/* inverse of transform to eye ray  */
-MATRIX invrse = {{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
+// inverse of transform to eye ray
+// This gets set only during the inverse() call in setViewMatrix if the 
+//     matrix is singular (invertable)
+MATRIX viewInverse = {{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
 
-/*-------------------------------------------------------------------*/
+void set_view_matrix(const std::vector<double> & avs_camera) {
+    // copy the view matrix over, note that the viewpoint
+    // is at (0, 0, 12) facing down the negative Z axis
+    for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
+      viewMatrix[i][j] = avs_camera[i * 4 + j];
 
-void set_view_matrix( double *avs_camera ) {
-  int i,j;
-
-  /* copy the view matrix over, note that the viewpoint */
-  /* is at (0,0,12) facing down negative Z  */
-  for (i=0 ; i<4 ; i++)
-    for (j=0 ; j<4 ; j++)
-      xform[i][j] = *(avs_camera + (i*4+j));
-
-  /* invert the matrix so view can be moved instead of moving objects */
-  if (inverse(xform, invrse) == NON_SINGULAR) {
-    fprintf(stderr,"Camera transformation is non-singular - IGNORING\n");
-    fflush(stderr);
-    MatrixIdentity(invrse);
-  }
-
+    // invert the matrix so view can be moved instead of moving objects
+    if (inverse(viewMatrix, viewInverse) == NON_SINGULAR) {
+    std::cerr << "Camera transformation is non-singular - IGNORING" << std::endl;;
+    MatrixIdentity(viewInverse);
+    }
 }
-
-/*-------------------------------------------------------------------*/
 
 void output_camera() {
-  fprintf(stderr, "Camera transformation ");
-  MatrixPrint(xform);
-  fprintf(stderr, "Inverse Camera transformation ");
-  MatrixPrint(invrse);
+    std::cerr << "Camera transformation " << std::endl;
+    MatrixPrint(viewMatrix);
+    std::cerr << "Inverse camera transformation " << std::endl;
+    MatrixPrint(viewInverse);
 }
 
-/*-------------------------------------------------------------------*/
 
-Point camera_xform( Point p ) {
-  Point a;
+Point cameraTransform(const Point & p) {
+    Point a;
 
-  /* pre-multiply the matrix (PxM) */
-  a.x = p.x*xform[0][0]+p.y*xform[1][0]+p.z*xform[2][0]+xform[3][0];
-  a.y = p.x*xform[0][1]+p.y*xform[1][1]+p.z*xform[2][1]+xform[3][1];
-  a.z = p.x*xform[0][2]+p.y*xform[1][2]+p.z*xform[2][2]+xform[3][2];
+    a.x = p.x*viewMatrix[0][0]+p.y*viewMatrix[1][0]+p.z*viewMatrix[2][0]+viewMatrix[3][0];
+    a.y = p.x*viewMatrix[0][1]+p.y*viewMatrix[1][1]+p.z*viewMatrix[2][1]+viewMatrix[3][1];
+    a.z = p.x*viewMatrix[0][2]+p.y*viewMatrix[1][2]+p.z*viewMatrix[2][2]+viewMatrix[3][2];
 
-  return a;
+    return a;
 }
 
-/*-------------------------------------------------------------------*/
+Point invCameraTransform(const Point & p) {
+    Point a;
 
-Point inv_camera_xform( Point p ) {
-  Point a;
+    a.x = p.x*viewInverse[0][0]+p.y*viewInverse[1][0]+p.z*viewInverse[2][0]+viewInverse[3][0];
+    a.y = p.x*viewInverse[0][1]+p.y*viewInverse[1][1]+p.z*viewInverse[2][1]+viewInverse[3][1];
+    a.z = p.x*viewInverse[0][2]+p.y*viewInverse[1][2]+p.z*viewInverse[2][2]+viewInverse[3][2];
 
-  /* pre-multiply the inverse camera matrix (PxM-1) */
-  a.x = p.x*invrse[0][0]+p.y*invrse[1][0]+p.z*invrse[2][0]+invrse[3][0];
-  a.y = p.x*invrse[0][1]+p.y*invrse[1][1]+p.z*invrse[2][1]+invrse[3][1];
-  a.z = p.x*invrse[0][2]+p.y*invrse[1][2]+p.z*invrse[2][2]+invrse[3][2];
-
-  return a;
+    return a;
 }
 
-/*-------------------------------------------------------------------*/
+Vector vecCameraTransform(const Vector & p) {
+    Vector a;
 
-Vector vec_camera_xform( Vector p ) {
-  Vector a;
+    a.x = p.x*viewMatrix[0][0]+p.y*viewMatrix[1][0]+p.z*viewMatrix[2][0];
+    a.y = p.x*viewMatrix[0][1]+p.y*viewMatrix[1][1]+p.z*viewMatrix[2][1];
+    a.z = p.x*viewMatrix[0][2]+p.y*viewMatrix[1][2]+p.z*viewMatrix[2][2];
 
-  /* pre-multiply the inverse camera matrix (PxM) */
-  a.x = p.x*xform[0][0]+p.y*xform[1][0]+p.z*xform[2][0];
-  a.y = p.x*xform[0][1]+p.y*xform[1][1]+p.z*xform[2][1];
-  a.z = p.x*xform[0][2]+p.y*xform[1][2]+p.z*xform[2][2];
-
-  return a;
+    return a;
 }
 
-/*-------------------------------------------------------------------*/
+Vector vecInvCameraTransform(const Vector & p) {
+    Vector a;
 
-Vector vec_inv_camera_xform( Vector p ) {
-  Vector a;
+    a.x = p.x*viewInverse[0][0]+p.y*viewInverse[1][0]+p.z*viewInverse[2][0];
+    a.y = p.x*viewInverse[0][1]+p.y*viewInverse[1][1]+p.z*viewInverse[2][1];
+    a.z = p.x*viewInverse[0][2]+p.y*viewInverse[1][2]+p.z*viewInverse[2][2];
 
-  /* pre-multiply the inverse camera matrix (PxM-1) */
-  a.x = p.x*invrse[0][0]+p.y*invrse[1][0]+p.z*invrse[2][0];
-  a.y = p.x*invrse[0][1]+p.y*invrse[1][1]+p.z*invrse[2][1];
-  a.z = p.x*invrse[0][2]+p.y*invrse[1][2]+p.z*invrse[2][2];
-
-  return a;
+    return a;
 }
 
-/*-------------------------------------------------------------------*/
-
-double camera_lookup( int i, int j ) {
-  return xform[i][j];
+double camera_lookup(const int & i, const int & j) {
+  return viewMatrix[i][j];
 }
-
-/*-------------------------------------------------------------------*/
-
