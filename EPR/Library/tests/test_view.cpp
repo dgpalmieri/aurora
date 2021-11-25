@@ -72,8 +72,28 @@ TEST_CASE("View Tests"){
         CHECK(vecRetPoint2.z == 57);
     }
 
-    SUBCASE("vec_inv_camera_xform"){}
+    SUBCASE("vec_inv_camera_xform"){
+        Point vecTestPoint = {1, 1, 1};
+        Point vecRetPoint = camera_xform(vecTestPoint);
 
-    SUBCASE("camera_lookup tests"){}
+        CHECK(vecRetPoint.x == 28);
+        CHECK(vecRetPoint.y == 32);
+        CHECK(vecRetPoint.z == 36);
 
+        Point vecTestPoint2 = {2, 2, 2};
+        Point vecRetPoint2 = camera_xform(vecTestPoint2);
+
+        CHECK(vecRetPoint2.x == 43);
+        CHECK(vecRetPoint2.y == 50);
+        CHECK(vecRetPoint2.z == 57);
+    }
+
+    SUBCASE("camera_lookup tests"){
+        REQUIRE(camera_lookup(0,0) == 1.0);
+        REQUIRE(camera_lookup(0,1) == 2.0);
+        REQUIRE(camera_lookup(0,2) == 3.0);
+        REQUIRE(camera_lookup(0,3) == 4.0);
+        REQUIRE(camera_lookup(1,0) == 5.0);
+        REQUIRE(camera_lookup(1,1) == 6.0);
+    }
 }
