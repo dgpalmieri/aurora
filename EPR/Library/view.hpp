@@ -1,5 +1,5 @@
 // view.hpp
-// Refactored to C++17 by Dylan Palmieri @dgpalmieri
+// Refactored to C++17 by Dylan Palmieri (@dgpalmieri)
 // Functions that set the viewing/raster attributes
 
 #ifndef VIEW_H

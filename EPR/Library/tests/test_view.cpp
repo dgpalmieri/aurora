@@ -1,5 +1,5 @@
 // test_view.cpp
-// Author: Dylan Palmieri @dgpalmieri
+// Author: Dylan Palmieri (@dgpalmieri)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
