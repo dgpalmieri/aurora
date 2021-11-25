@@ -13,13 +13,13 @@ void setViewMatrix(const std::vector<double> &);
 
 void outputCamera();
 
-Point cameraXform(const Point &);
+Point cameraTransform(const Point &);
 
-Point invCameraXform(const Point &);
+Point invCameraTransform(const Point &);
 
-Vector vecCameraXform(const Vector &);
+Vector vecCameraTransform(const Vector &);
 
-Vector vecInvCameraXform(const Vector &);
+Vector vecInvCameraTransform(const Vector &);
 
 double cameraLookup(const int &, const int &);
 
