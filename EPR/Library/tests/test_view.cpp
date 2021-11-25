@@ -5,15 +5,16 @@
 #include "doctest.h"
 
 #include <iostream>
+#include <vector>
 
 TEST_CASE("View Tests"){
 
     // set_view_matrix tests
 
-    double testMatrix[16] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
-                             10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0};
+    std::vector<double> testMatrix = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
+                                   10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0};
 
-    set_view_matrix(testMatrix);
+    setViewMatrix(testMatrix);
     // Is there a way to access the xform and invrse matricies in the view file?
     // Ideally, this would be some kind of read-only global variable
 
@@ -24,76 +25,76 @@ TEST_CASE("View Tests"){
     // Because this function is composed entirely of two prints two MatrixPrints (which
     // are tested in test_rays.cpp), testing this function seems repeetitive and non-DRY
 
-    SUBCASE("camera_xform tests"){
+    SUBCASE("cameraTransform tests"){
         Point testPoint = {1, 1, 1};
-        Point retPoint = camera_xform(testPoint);
+        Point retPoint = cameraTransform(testPoint);
 
-        CHECK(retPoint.x == 28);
-        CHECK(retPoint.y == 32);
-        CHECK(retPoint.z == 36);
+        REQUIRE(retPoint.x == 28);
+        REQUIRE(retPoint.y == 32);
+        REQUIRE(retPoint.z == 36);
 
         Point testPoint2 = {2, 2, 2};
-        Point retPoint2 = camera_xform(testPoint2);
+        Point retPoint2 = cameraTransform(testPoint2);
 
-        CHECK(retPoint2.x == 43);
-        CHECK(retPoint2.y == 50);
-        CHECK(retPoint2.z == 57);
+        REQUIRE(retPoint2.x == 43);
+        REQUIRE(retPoint2.y == 50);
+        REQUIRE(retPoint2.z == 57);
     }
 
-    SUBCASE("inv_camera_xform"){
+    SUBCASE("invCameraTransform"){
         Point testPoint = {1, 1, 1};
-        Point retPoint = camera_xform(testPoint);
+        Point retPoint = invCameraTransform(testPoint);
 
-        CHECK(retPoint.x == 28);
-        CHECK(retPoint.y == 32);
-        CHECK(retPoint.z == 36);
+        REQUIRE(retPoint.x == 1.0);
+        REQUIRE(retPoint.y == 1.0);
+        REQUIRE(retPoint.z == 1.0);
 
         Point testPoint2 = {2, 2, 2};
-        Point retPoint2 = camera_xform(testPoint2);
+        Point retPoint2 = invCameraTransform(testPoint2);
 
-        CHECK(retPoint2.x == 43);
-        CHECK(retPoint2.y == 50);
-        CHECK(retPoint2.z == 57);
+        REQUIRE(retPoint2.x == 2.0);
+        REQUIRE(retPoint2.y == 2.0);
+        REQUIRE(retPoint2.z == 2.0);
     }
 
-    SUBCASE("vec_camera_xform tests"){
+    SUBCASE("vecCameraTransform tests"){
         Point vecTestPoint = {1, 1, 1};
-        Point vecRetPoint = camera_xform(vecTestPoint);
+        Point vecRetPoint = vecCameraTransform(vecTestPoint);
 
-        CHECK(vecRetPoint.x == 28);
-        CHECK(vecRetPoint.y == 32);
-        CHECK(vecRetPoint.z == 36);
+        REQUIRE(vecRetPoint.x == 15.0);
+        REQUIRE(vecRetPoint.y == 18.0);
+        REQUIRE(vecRetPoint.z == 21.0);
 
         Point vecTestPoint2 = {2, 2, 2};
-        Point vecRetPoint2 = camera_xform(vecTestPoint2);
+        Point vecRetPoint2 = vecCameraTransform(vecTestPoint2);
 
-        CHECK(vecRetPoint2.x == 43);
-        CHECK(vecRetPoint2.y == 50);
-        CHECK(vecRetPoint2.z == 57);
+        REQUIRE(vecRetPoint2.x == 30.0);
+        REQUIRE(vecRetPoint2.y == 36.0);
+        REQUIRE(vecRetPoint2.z == 42.0);
     }
 
     SUBCASE("vec_inv_camera_xform"){
         Point vecTestPoint = {1, 1, 1};
-        Point vecRetPoint = camera_xform(vecTestPoint);
+        Point vecRetPoint = vecInvCameraTransform(vecTestPoint);
 
-        CHECK(vecRetPoint.x == 28);
-        CHECK(vecRetPoint.y == 32);
-        CHECK(vecRetPoint.z == 36);
+        REQUIRE(vecRetPoint.x == 1.0);
+        REQUIRE(vecRetPoint.y == 1.0);
+        REQUIRE(vecRetPoint.z == 1.0);
 
         Point vecTestPoint2 = {2, 2, 2};
-        Point vecRetPoint2 = camera_xform(vecTestPoint2);
+        Point vecRetPoint2 = vecInvCameraTransform(vecTestPoint2);
 
-        CHECK(vecRetPoint2.x == 43);
-        CHECK(vecRetPoint2.y == 50);
-        CHECK(vecRetPoint2.z == 57);
+        REQUIRE(vecRetPoint2.x == 2.0);
+        REQUIRE(vecRetPoint2.y == 2.0);
+        REQUIRE(vecRetPoint2.z == 2.0);
     }
 
     SUBCASE("camera_lookup tests"){
-        REQUIRE(camera_lookup(0,0) == 1.0);
-        REQUIRE(camera_lookup(0,1) == 2.0);
-        REQUIRE(camera_lookup(0,2) == 3.0);
-        REQUIRE(camera_lookup(0,3) == 4.0);
-        REQUIRE(camera_lookup(1,0) == 5.0);
-        REQUIRE(camera_lookup(1,1) == 6.0);
+        REQUIRE(cameraLookup(0,0) == 1.0);
+        REQUIRE(cameraLookup(0,1) == 2.0);
+        REQUIRE(cameraLookup(0,2) == 3.0);
+        REQUIRE(cameraLookup(0,3) == 4.0);
+        REQUIRE(cameraLookup(1,0) == 5.0);
+        REQUIRE(cameraLookup(1,1) == 6.0);
     }
 }
