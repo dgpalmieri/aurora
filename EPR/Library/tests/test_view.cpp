@@ -14,13 +14,16 @@ TEST_CASE("View Tests"){
 
     set_view_matrix(zeroMatrix);
     // Is there a way to access the xform and invrse matricies in the view file?
-    // Testing this isn't possible unless we incorporate extra functions
+    // Ideally, this would be some kind of read-only global variable
+
+    // Now the xform matrix is a 4x4 matrix of zeros, and the inverse matrix is
+    // still the identity matrix
 
     // camera_xform tests
     // Because this function is composed entirely of two prints two MatrixPrints (which
     // are tested in test_rays.cpp), testing this function seems repeetitive and non-DRY
 
-    // inv_camera_xform tests
+    // camera_xform tests
 
     Point testPoint = {1, 1, 1};
     Point retPoint = camera_xform(testPoint);
@@ -35,6 +38,22 @@ TEST_CASE("View Tests"){
     REQUIRE(retPoint2.x == 0);
     REQUIRE(retPoint2.y == 0);
     REQUIRE(retPoint2.z == 0);
+
+    // inv_camera_xform
+
+    Point invTestPoint = {1, 1, 1};
+    Point invRetPoint = camera_xform(testPoint);
+
+    REQUIRE(invRetPoint.x == 1);
+    REQUIRE(invRetPoint.y == 1);
+    REQUIRE(invRetPoint.z == 1);
+
+    Point invTestPoint2 = {2, 2, 2};
+    Point invRetPoint2 = camera_xform(testPoint2);
+
+    REQUIRE(invRetPoint2.x == 2);
+    REQUIRE(invRetPoint2.y == 2);
+    REQUIRE(invRetPoint2.z == 2);
 
     // vec_camera_xform tests
 
