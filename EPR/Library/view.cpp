@@ -76,5 +76,5 @@ Vector vecInvCameraTransform(const Vector & p) {
 }
 
 double cameraLookup(const int & i, const int & j) {
-  return viewMatrix[i][j];
+    return viewMatrix[i][j];
 }
