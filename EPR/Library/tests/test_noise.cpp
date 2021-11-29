@@ -1,7 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "doctest.h"
-#include "noise.hpp"
+#include "../noise.hpp"
 
 TEST_CASE("Testing noise: Simple test") {
     initnoise();
