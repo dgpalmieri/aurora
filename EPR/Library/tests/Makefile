@@ -2,7 +2,6 @@
 # this is the EPR/Library/tests Makefile
 #https://stackoverflow.com/a/28236905
 #https://gcc.gnu.org/onlinedocs/gcc/Invoking-G_002b_002b.html
-
 #for debugging information, add -g to this next line or in a recipe, below
 CC = g++ -std=c++17 -Wall -Wextra -O2 -DSGI32
 LIB = ../../Library
