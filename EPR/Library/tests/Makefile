@@ -29,9 +29,13 @@ test_rays:
 	$(CC) $(INCQ) -L$(LIB) \
 	test_rays.cpp $(LIB)/rays.cpp -o test_rays -lm
   
- test_stack:
+test_stack:
 	$(CC) -g $(INCQ) -L$(LIB) \
 	$(LIB)/octree.c $(LIB)/stack.cpp test_stack.cpp -o test_stack -lm
   
+test_view:
+	$(CC) $(INCQ) -L$(LIB) \
+	$(LIB)/rays.cpp $(LIB)/view.cpp test_view.cpp  -o test_view -lm
+
 clean:
-	find . -maxdepth 1 -name "test_*" -not -name "*\.cpp" -print -delete
+	rm -f test_atomics test_noise test_octree test_raster test_rays test_stack test_view
