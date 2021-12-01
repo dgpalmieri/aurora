@@ -31,6 +31,10 @@ test_rays:
 test_stack:
 	$(CC) -g $(INCQ) -L$(LIB) \
 	$(LIB)/octree.c $(LIB)/stack.cpp test_stack.cpp -o test_stack -lm
+
+test_timing: 
+	$(CC) $(INCQ) -L$(LIB) \
+	test_timing.cpp $(LIB)/timing.c -o test_timing -lm
   
 test_view:
 	$(CC) $(INCQ) -L$(LIB) \
