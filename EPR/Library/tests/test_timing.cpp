@@ -125,6 +125,6 @@ TEST_CASE("Testing the print_timing function") {
         CHECK(output == message);
     }
 
-    // std::remove("printtimingoutput.txt");
-    // std::remove("computetimeoutput.txt");
+    std::remove("printtimingoutput.txt");
+    std::remove("computetimeoutput.txt");
 }
