@@ -41,4 +41,4 @@ test_view:
 	$(LIB)/rays.cpp $(LIB)/view.cpp test_view.cpp  -o test_view -lm
 
 clean:
-	rm -f test_atomics test_noise test_octree test_raster test_rays test_stack test_view
+	rm -f test_atomics test_noise test_octree test_raster test_rays test_stack test_timing test_view
