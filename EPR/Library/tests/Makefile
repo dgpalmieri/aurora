@@ -31,10 +31,14 @@ test_rays:
 test_stack:
 	$(CC) -g $(INCQ) -L$(LIB) \
 	$(LIB)/octree.c $(LIB)/stack.cpp test_stack.cpp -o test_stack -lm
+
+test_timing: 
+	$(CC) $(INCQ) -L$(LIB) \
+	test_timing.cpp $(LIB)/timing.c -o test_timing -lm
   
 test_view:
 	$(CC) $(INCQ) -L$(LIB) \
 	$(LIB)/rays.cpp $(LIB)/view.cpp test_view.cpp  -o test_view -lm
 
 clean:
-	rm -f test_atomics test_noise test_octree test_raster test_rays test_stack test_view
+	rm -f test_atomics test_noise test_octree test_raster test_rays test_stack test_timing test_view
