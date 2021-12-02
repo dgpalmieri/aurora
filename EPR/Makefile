@@ -1,4 +1,3 @@
-
 # Apple G4 uniprocessor version
 # also works for Intel x64
 # CC = gcc -g -DSGI32
@@ -17,7 +16,8 @@ epr: render.o epr.o $(LIB)/libepr.a
 epr.o: $(LIB)/atomics.h render.h epr.c
 	$(CC) -DDO_GREEN $(CFLAGS) -I$(LIB) -c epr.c
 
-render.o: $(LIB)/atomics.hpp render.hpp render.cpp
+#render.o: $(LIB)/atomics.hpp render.hpp render.cpp
+render.o:
 	$(CC) $(CFLAGS) -I$(LIB) -c render.cpp
 
 epr.gre: render.o epr_gre.o $(LIB)/libepr.a
