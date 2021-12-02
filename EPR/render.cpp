@@ -9,16 +9,15 @@
 #include <math.h>
 #include <unistd.h>
 #include <fcntl.h>          /* file handling w/integer file pointers */
-#include <string.h>
-#include "atomics.h"
-#include "raster.h" /* this includes atomics, so perhaps not needed above? */
+#include <string.h> /* pretty sure we don't need this */
+#include "raster.hpp" /* this includes atomics.hpp */
 #include "render.hpp"
-#include "err_msg.h"
+#include "err_msg.hpp"
 #include "rays.hpp"
-#include "view.h"
-#include "timing.h"
+#include "view.hpp"
+#include "timing.hpp"
 #include "noise.hpp"
-#include "stack.h"          /* includes octree.h */
+#include "stack.hpp"          /* includes octree.hpp */
 
 /***** COMPUTATION OPTIONS *****/
 #define _PRODUCTION_RUN
@@ -78,6 +77,7 @@ extern double totalTime;
 double channelTime = 0;
 
 /* bounding box (world coordinates) of aurora at any time */
+/* these are declared extern because they come from... */
 extern const double VolumeXmin, VolumeXmax;
 extern const double VolumeYmin, VolumeYmax;
 extern const double VolumeZmin, VolumeZmax;
@@ -192,7 +192,7 @@ extern float brightness[MAX_CURTAINS][MAX_POINTS];
 extern float uv[MAX_CURTAINS][MAX_POINTS];
 extern float **inclination;
 
-/* calculated and only used in render.c */
+/* calculated and only used in render.cpp */
 static uLong vol_xres, vol_yres, vol_zres;
 static uLong vol_xyres;
 static uLong super_xy;
@@ -205,6 +205,7 @@ static uLong mask_y;
 static uLong mask_z;
 static double target_area;
 static double mip_frac;
+/* comes from ray.hpp */
 static Ray apex;
 
 /*** set in calc_volume() and used in render_image() ***/
@@ -244,7 +245,7 @@ int original_oct_depth; //allows for non power of 2 supers
 unsigned int num_children; /* number of nodes created by octree */
 
 /* Counters used for volume stats */
-unsigned int        sub_num_samples; //declared extern in octree.h
+unsigned int        sub_num_samples; //declared extern in octree.hpp
 static unsigned int num_inserts = 0; /* number of insertions, ==0, skip render */
 unsigned int        num_sub_allocated = 0;
 static unsigned int num_overwrites = 0;
@@ -313,6 +314,7 @@ double frame_num
     { printf("Invalid size for texture map\n"); exit(1); }
 
   /* malloc memory for mip-mapped texture */
+  //replace with an object.new() method to allocate this in C++
   lower[curtain_num].values = (short *) malloc( sizeof(short)*xres*yres );
   if (!(lower[curtain_num].values))
     { printf("Can't malloc memory for texture map\n"); exit(1); }
@@ -391,6 +393,7 @@ double frame_num
     { printf("Invalid size for texture map\n"); exit(1); }
 
   /* malloc memory for mip-mapped texture */
+  //replace with an object.new() for C++
   higher[curtain_num].values = (short *) malloc( sizeof(short)*xres*yres );
   if (!(higher[curtain_num].values))
     { printf("Can't malloc memory for texture map\n"); exit(1); }
@@ -427,6 +430,7 @@ double frame_num
     { printf("Invalid size for texture map\n"); exit(1); }
 
   /* malloc memory for mip-mapped texture */
+  //replace with an object.new() for C++
   tmp = (short *) malloc( sizeof(short)*xres*yres );
   if (!tmp)
     { printf("Can't malloc memory for texture map\n"); exit(1); }
@@ -508,6 +512,7 @@ Vector in
   Dist = in.x*in.x + in.z*in.z;
   if (Dist < 0.000001) {
     /* north pole - shouldn't really happen with aurora */
+    //could do a doctest assert macro here?
     phi = 0.0;
     theta = 0.0;
   } else {
@@ -698,7 +703,7 @@ unsigned long s_1[3]
         energy[7] = node->data[vox_111]*FROM_SHORT;
         return 1;
       }
-    return 0; /* all the data should be here, but its null */
+    return 0; /* all the data should be here, but it's null */
     break;
 
     case 1: //001 only z differs
@@ -828,6 +833,7 @@ unsigned long s_1[3]
 
   } /* End of switch(which_case) */
 
+  //would a more C++ way to do this be std::cout, or should we just skip this?
   printf("It's impossible to reach this place.  If we get here we will die.\n");
   exit(1);
 
@@ -846,6 +852,7 @@ Point world2voxel(Point w)
 
 /*---------------------------------------------------------------------------*/
 
+//member function of a voxel object?
 Point voxel2world(Point v)
 {
   Point w;
@@ -857,6 +864,7 @@ Point voxel2world(Point v)
 
 /*---------------------------------------------------------------------------*/
 
+//member function of a curtain object?
 float interp_brightness(int curtain_no, double u)
 {
   float result;
@@ -889,6 +897,7 @@ float interp_brightness(int curtain_no, double u)
 
 /*---------------------------------------------------------------------------*/
 
+//member function of a curtain object?
 float interp_uv(int curtain_no, double u)
 {
   float result;
@@ -1052,7 +1061,7 @@ double elevation
 } /* end green_deposition() */
 
 /*---------------------------------------------------------------------------*/
-
+//Dr. Genetti said he would be doing red perhaps
 short red_deposition(
 short  energy,
 double elevation
@@ -1090,7 +1099,8 @@ double elevation
 } /* end red_deposition() */
 
 /*---------------------------------------------------------------------------*/
-
+// it looks like this *might* be a candidate to become a member function (of a curtain object?)
+// with modes based on a passed flag value?
 void scan_convert(
 Vertex P1,
 Vertex P2,
@@ -1391,7 +1401,7 @@ printf("rus=%lf rvs=%lf\n", rus0, rvs0);
 } /* end scan_convert() */
 
 /*---------------------------------------------------------------------------*/
-
+//possibly a member function for a voxel object?
 void calc_vol_params(
 )
 {
@@ -1462,6 +1472,7 @@ void calc_vol_params(
 } /* end calc_vol_params() */
 
 /*---------------------------------------------------------------------------*/
+//this seems like a candidate to become a member function of a curtain object?
 
 void calc_volume(
 int curtain_start,
@@ -1502,7 +1513,7 @@ Vector tmpv;
 double dp;
 
 
-
+//if making a curtain class, then would move this into the new()/process()?
   /* process all of the curtains */
   for ( c=curtain_start ; c<=curtain_end ; c++ ) {
 
@@ -1962,7 +1973,7 @@ int   color_band
 
 
 #ifdef NOISE_TO_ELEVATION
-  /* OK, this function is deprecated, so we need to create a noise object here */
+  /* OK, this function is deprecated, so we need to create a noise object here? */
   initnoise();
 #endif
   total_vol = 0.0;
@@ -2050,6 +2061,7 @@ int   color_band
   double totalRenderTime = 0;
 
   /* for each curtain, build a volume and then render to raster */
+  //so a curtain object could have build_volume() and render() methods?
   for ( cur=0 ; cur<num_curtains ; cur++ ) {
 
     printf("\n"); printf("%s", sharps);
@@ -2337,6 +2349,7 @@ printf("Pixel[%d][%d] = <%.2lf,%.2lf,%.2lf>+<%.2lf,%.2lf,%.2lf>t\n",
             childL[7].z = mid_z;             childU[7].z = top_stack.max.z;
 
             /* For each child of the current volume */
+            //so we are going to do this 8 times for each voxel * ray?
             for (c=0; c<8; c++) {
 
               /* Does the volume intersect with the ray? */
