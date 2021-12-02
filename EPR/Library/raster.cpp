@@ -5,7 +5,7 @@
 /* per Dr. Genetti, there are no asserts in production code, so can leave this out */
 /* #include <assert.h> */
 
-#include "raster"
+#include "raster.hpp"
 
 /*--------------------------------------------------------------------*/
 
@@ -100,6 +100,7 @@ int     yres
 
 /*-------------------------------------------------------------------*/
 /* since this is a no-op, can we leave it out of the code that we bring forward to C++? */
+/* satisfying -Wall by using the parameters */
 int write_image_as_avs(
 Pixel  *image,
 char   *filename,
@@ -107,6 +108,10 @@ int     xres,
 int     yres
 )
 {
+  fprintf(stderr, "xres was passed as %d.\n",xres);
+  fprintf(stderr, "yres was passed as %d.\n",yres);
+  fprintf(stderr, "filename was passed as %s.\n",filename);
+  fprintf(stderr, "A Pixel struct was passed of size %lu.\n",sizeof(image));
   return 0;
 }
 

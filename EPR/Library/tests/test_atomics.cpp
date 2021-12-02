@@ -1,47 +1,85 @@
 /*      File: test_atomics.cpp */
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include <iostream>
+#include "doctest.h"
 #include <limits>
-#include <climits>
 #include "atomics.hpp"
 
-/*-------------------------------------------------------------------*/
-/* https://stackoverflow.com/a/13981171 */
+TEST_CASE("Testing atomics.hpp: Types") {
 
-uLong subtract(uByte4 S1, uLong S2)
-{
-  uLong S;
-  S = S2 - S1;
-  return S;
-}
+  SUBCASE("Confirm numeric constants") {
 
-/*-------------------------------------------------------------------*/
-/* https://stackoverflow.com/a/3618674 */
-/* https://stackoverflow.com/a/589684 */
+    CHECK(INTEN_NUM == 32768);
+    CHECK(INTEN_BIT == 15);
 
-/* int main( int argc, char * argv[] ) */
-int main()
-{
+  }
 
-  const int min_int = std::numeric_limits<int>::min();
-  const int max_int = std::numeric_limits<int>::max();
+  SUBCASE("Confirm type definition for unsigned long int") {
 
-  std::cout << INT_MAX << " minus " << std::numeric_limits<short>::max() << " is " \
-      << subtract(std::numeric_limits<short>::max(), INT_MAX) << std::endl; 
-  std::cout << "minimum integer is: " << min_int << std::endl;
-  std::cout << "maximum integer is: " << max_int << std::endl;
+    REQUIRE(sizeof(unsigned long int) == sizeof(uLong));
 
-  std::cout<< "size of short: " << sizeof (short) << std::endl;
-  std::cout<< "size of int: " << sizeof (int) << std::endl;
-  std::cout<< "size of long: " << sizeof (long) << std::endl;
-  std::cout<< "size of long long: " << sizeof (long long) << std::endl;
-  std::cout<< "size of uLong: " << sizeof (uLong) << std::endl;
-  std::cout<< "size of uByte1: " << sizeof (uByte1) << std::endl;
-  std::cout<< "size of uByte4: " << sizeof (uByte4) << std::endl;
-  std::cout<< "size of ubyte8: " << sizeof (uByte8) << std::endl;
-  std::cout<< "intensity number is " << INTEN_NUM << std::endl;
-  std::cout<< "intensity bits are " << INTEN_BIT << std::endl;
+  }
 
-  return 1;
+#ifdef MTA 
+  SUBCASE("Confirm type definitions for platform") {
+
+    REQUIRE(sizeof(unsigned char) == sizeof(uByte1));
+    REQUIRE(sizeof(unsigned short) == sizeof(uByte4));
+    REQUIRE(sizeof(unsigned int) == sizeof(uByte8)); 
+
+  }
+#endif
+
+#ifdef SGI64
+  SUBCASE("Confirm type definitions for platform") {
+
+    REQUIRE(sizeof(unsigned char) == sizeof(uByte1));
+    REQUIRE(sizeof(unsigned int) == sizeof(uByte4));
+    REQUIRE(sizeof(unsigned long) == sizeof(uByte8)); 
+
+  }
+#endif
+
+//Here's the copy pasta because these platforms 
+//are identically specified in atomics.hpp
+#ifdef SGI32
+  SUBCASE("Confirm type definitions for platform") {
+
+    REQUIRE(sizeof(unsigned char) == sizeof(uByte1));
+    REQUIRE(sizeof(unsigned int) == sizeof(uByte4));
+    REQUIRE(sizeof(unsigned long long) == sizeof(uByte8)); 
+
+  }
+#endif
+
+#ifdef SUN 
+  SUBCASE("Confirm type definitions for platform") {
+
+    REQUIRE(sizeof(unsigned char) == sizeof(uByte1));
+    REQUIRE(sizeof(unsigned int) == sizeof(uByte4));
+    REQUIRE(sizeof(unsigned long long) == sizeof(uByte8)); 
+
+  }
+#endif
+
+#ifdef SP2 
+  SUBCASE("Confirm type definitions for platform") {
+
+    REQUIRE(sizeof(unsigned char) == sizeof(uByte1));
+    REQUIRE(sizeof(unsigned int) == sizeof(uByte4));
+    REQUIRE(sizeof(unsigned long long) == sizeof(uByte8)); 
+
+  }
+#endif
+
+#ifdef OSX 
+  SUBCASE("Confirm type definitions for platform") {
+
+    REQUIRE(sizeof(unsigned char) == sizeof(uByte1));
+    REQUIRE(sizeof(unsigned int) == sizeof(uByte4));
+    REQUIRE(sizeof(unsigned long long) == sizeof(uByte8)); 
+
+  }
+#endif
 
 }
