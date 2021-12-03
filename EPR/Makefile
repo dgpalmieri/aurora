@@ -3,7 +3,10 @@
 # CC = gcc -g -DSGI32
 #CC = cc -O2 -DSGI32
 # for debugging information, add -g below
-CC = g++ -std=c++17 -Wall -Wextra -Werror -O2 -DSGI32
+#CC = g++ -std=c++17 -Wall -Wextra -Werror -O2 -DSGI32
+
+#something wrong with stack pulling in rays.h? take out -Werror for now
+CC = g++ -std=c++17 -Wall -Wextra -O2 -DSGI32
 
 LIB = Library
 

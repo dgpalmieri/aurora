@@ -1,8 +1,8 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
-#include "rays.h"
-#include "octree.h"
+#include "rays.hpp"
+#include "octree.hpp"
 #include <iostream>
 #include <memory>
 #include <vector>
