@@ -90,8 +90,8 @@ color mappings in the `conv_raw` script.
 
 ## Opening PPM
 
-To open the `*.ppm` [Inkscape](https://inkscape.org/) or
-[Irfanview](https://www.irfanview.com/) can be used.
+To open the `*.ppm`, you can use [Inkscape](https://inkscape.org/),
+[Irfanview](https://www.irfanview.com/), or [imv](https://git.sr.ht/~exec64/imv/).
 
 ## Making a video
 
