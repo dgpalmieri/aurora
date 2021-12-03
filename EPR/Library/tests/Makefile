@@ -10,9 +10,9 @@ INCQ = -iquote ../
 
 test_atomics:
 	$(CC) $(INCQ) -L$(LIB) \
-	$(LIB)/atomics.cpp test_atomics.cpp -o test_atomics -lm
+	test_atomics.cpp -o test_atomics -lm
 
-test_noise: 
+test_noise:
 	$(CC) -g $(INCQ) -L$(LIB) \
 	test_noise.cpp $(LIB)/noise.cpp -o test_noise -lm
 
@@ -24,7 +24,7 @@ test_raster:
 	$(CC) $(INCQ) -L$(LIB) \
 	test_raster.cpp $(LIB)/raster.cpp -o test_raster -lm
 
-test_rays: 
+test_rays:
 	$(CC) $(INCQ) -L$(LIB) \
 	test_rays.cpp $(LIB)/rays.cpp -o test_rays -lm
   
