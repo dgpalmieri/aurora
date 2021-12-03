@@ -16,9 +16,9 @@ test_noise:
 	$(CC) -g $(INCQ) -L$(LIB) \
 	test_noise.cpp $(LIB)/noise.cpp -o test_noise -lm
 
-test_octree: #TODO change libtest.cpp to test_octree.cpp
+test_octree:
 	$(CC) -g $(INCQ) -L$(LIB) \
-  $(LIB)/err_msg.cpp $(LIB)/octree.cpp libtest.cpp -o test_octree
+	$(LIB)/err_msg.cpp $(LIB)/octree.cpp test_octree.cpp -o test_octree
   
 test_raster:
 	$(CC) $(INCQ) -L$(LIB) \
