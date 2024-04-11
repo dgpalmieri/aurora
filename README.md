@@ -1,3 +1,8 @@
+# Archive
+This project was undertaken during the fall of 2021, during a graduate Software Development class at the University of Alaska Fairbanks.
+
+As the class is over and this project has not been maintained in several years, it is being archived.
+
 # Aurora
 
 ## Decompressing the Textures
